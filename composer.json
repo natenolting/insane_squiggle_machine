@@ -1,0 +1,12 @@
+{
+    "name": "natenolting/insane-squiggle-machine",
+    "description": "Experiments in combining generative art and hand drawn illustrations",
+    "type": "project",
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "Nate Nolting",
+            "email": "me@natenolting.com"
+        }
+    ]
+}

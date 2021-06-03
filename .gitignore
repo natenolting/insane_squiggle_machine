@@ -1,0 +1,13 @@
+.env
+vendor
+node_modules
+.env.*.bk
+dock-helpers.sh
+dock.sh
+docker-compose.yml
+docker-jenkins-start.sh
+lighthouse.sh
+organizeEnv.php
+stacks.sh
+update-docker-assets-file.sh
+getUid.php

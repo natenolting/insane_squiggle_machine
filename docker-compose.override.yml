@@ -1,0 +1,39 @@
+version: '3.1'
+services:
+  code:
+    volumes:
+      - ${PWD}/php-override.ini:/usr/local/etc/php/conf.d/php-override.ini
+    image: jenkins.paulbunyan.net:5000/php:7.4
+  hub:
+    image: selenium/hub:3.8.1
+    privileged: true
+    environment:
+      - GRID_TIMEOUT=120000
+      - GRID_BROWSER_TIMEOUT=120000
+      - SE_OPTS=-enablePassThrough false
+    networks:
+      - testend
+      - backend
+    depends_on:
+      - code
+
+  chrome:
+    image: selenium/node-chrome:3.8.1
+    environment:
+      - no_proxy=localhost
+      - TZ=America/Chicago
+      - HUB_PORT_4444_TCP_ADDR=hub
+      - HUB_PORT_4444_TCP_PORT=4444
+      - SE_OPTS=-enablePassThrough false
+    volumes:
+      - /dev/shm:/dev/shm
+    expose:
+      - '4444'
+    ports:
+      - '5900'
+    depends_on:
+      - hub
+    links:
+      - hub
+    networks:
+      - testend
