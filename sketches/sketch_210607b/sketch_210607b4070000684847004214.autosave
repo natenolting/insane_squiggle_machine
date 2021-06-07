@@ -1,0 +1,21 @@
+int cols, rows, h, w;
+int scl = 20;
+
+void setup() {
+  size(800, 800, P3D);
+  width = 800;
+  height = 800;
+  cols = w / scl;
+  rows = h / scl;
+}
+
+void draw() {
+  background(0);
+  for (int x = 0; x < cols; x++ ) {
+    for (int y = 0; x < rows; y++ ) {
+      stroke(255);
+      noFill();
+      rect(x*scl, y*scl, scl, scl);
+    }
+  }
+}
