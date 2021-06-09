@@ -1,10 +1,10 @@
 import java.util.UUID;
 
-int cols = 6;
-int rows = 6;
+int cols = 3;
+int rows = 3;
 int screenshotCount=1;
 String screenshotSet = UUID.randomUUID().toString();
-// https://colorpalettes.net/color-palette-4288/
+// https://colorpalettes.net/color-palette-4269/
 color c1 = #99998f;
 color c2 = #cbb796;
 color c3 = #f8a73f;
@@ -12,29 +12,92 @@ color c4 = #db5c01;
 color c5 = #1b1612;
 color[] colors  = {c1, c2, c3, c4, c5};
 int gH, gW;
+
 void setup() {
   size(1080,1080);
   gH = height/rows;
   gW = width/cols;
 }
 
+// function to find if given point
+// lies inside a given rectangle or not.
+static boolean FindPointInRectangle(int x1, int y1, int x2, int y2, int x, int y, boolean includeEdge) {
+
+  if(includeEdge && x >= x1 && x <= x2 && y >= y1 && y <= y2) {
+    return true;
+  }
+
+  if (x > x1 && x < x2 && y > y1 && y < y2) {
+    return true;
+  }
+
+  return false;
+}
+
+void texturizeCell(int w, int h, int x1, int y1, int x2, int y2) {
+  for (int x=x1; x < x1+w; x++) {
+    for (int y=y1; y < y1+h; y++) {
+      if(FindPointInRectangle(x1, y1, x2, y2, x, y, true)) {
+          int c = int(random(colors.length));
+          float s = random(2);
+          //print(" ");
+          //print("Size" + s);
+          if (int(random(colors.length)) == int(colors.length/2)) {
+            fill(colors[c]);
+            if ((x==x1 || y==y2) && s >= 1) {
+                circle(x+s, y+s, 1);
+                //print(" ");
+                //print("caught on left");
+            } else if ((x==w-1 || y==h-1) && s >= 1) {
+                circle(x-s, y-s, 1);
+                //print(" ");
+                //print("caught on right");
+            } else {
+                circle(x, y, s);
+            }
+        }
+      }
+    }
+  }
+}
+
 void cell(int r, int c, color bgC, color shapeC) {
+
+  int topLeftX = gW*r;
+  int topLeftY = gH*c;
+
+  int topRightX = gW*(r+1);
+  int topRightY = gH*c;
+
+  int bottomRightX = gW*(r+1);
+  int bottomRightY = gH*(c+1);
+
+  int bottomLeftX = gW*r;
+  int bottomLeftY = gH*(c+1);
+
   noStroke();
   fill(bgC);
   // create background
   beginShape();
   // top left
-  vertex(gW*r,gH*c);
+  vertex(topLeftX,topLeftY);
   //top right
-  vertex(gW*(r+1),gH*c);
+  vertex(topRightX,topRightY);
   // bottom right
-  vertex(gW*(r+1),gH*(c+1));
+  vertex(bottomRightX ,bottomRightY);
   // bottom left
-  vertex(gW*r,gH*(c+1));
+  vertex(bottomLeftX,bottomLeftY);
   endShape();
   // create overlay shape
   fill(shapeC);
 
+  int doTexture = int(random(2));
+  if (doTexture == 1) {
+  // texturize background
+    texturizeCell(gW, gH, topLeftX, topLeftY, bottomRightX, bottomRightY);
+  }
+
+  noStroke();
   // which overlay to use
   int sT = int(random(3));
 
@@ -44,11 +107,11 @@ void cell(int r, int c, color bgC, color shapeC) {
       if(a == 1) {
         //print("LEFT!");
         // left
-        arc(gW*r, gH*c+gH/2, gW, gH, radians(-90), radians(90));
+        arc(gW*r-1, gH*c+gH/2, gW, gH, radians(-90), radians(90));
       } else {
         //print("RIGHT!");
         // right
-        arc(gW*r+gW, gH*c+gH/2, gW, gH, radians(90), radians(270));
+        arc(gW*r+gW+1, gH*c+gH/2, gW, gH, radians(90), radians(270));
       }
   }
 
@@ -63,15 +126,15 @@ void cell(int r, int c, color bgC, color shapeC) {
       if(t == 1) {
 
         //right
-        vertex(gW*r,gH*c);
-        vertex(gW*(r+1),gH*c);
-        vertex(gW*r,gH*(c+1));
+        vertex(topLeftX,topLeftY);
+        vertex(topRightX,topRightY);
+        vertex(bottomLeftX,bottomLeftY);
       } else {
 
         // left
-        vertex(gW*r,gH*c);
-        vertex(gW*(r+1),gH*(c+1));
-        vertex(gW*r,gH*(c+1));
+        vertex(topLeftX,topLeftY);
+        vertex(bottomRightX,bottomRightY);
+        vertex(bottomLeftX,bottomLeftY);
       }
       endShape();
   }
@@ -95,7 +158,7 @@ void draw() {
         cell(r, c, colors[cI], colors[scI]);
     }
   }
-  save("result-"+screenshotSet+"-"+nf(screenshotCount,4)+".png");
+  save("result-"+nf(height)+"-"+nf(width)+"-"+nf(rows)+"-"+nf(cols)+"-"+screenshotSet+"-"+nf(screenshotCount,4)+".png");
   screenshotCount++;
 }
 
