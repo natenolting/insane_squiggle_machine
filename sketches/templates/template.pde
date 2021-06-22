@@ -19,6 +19,16 @@ void setup()
   gH = ceil(width/cols);
   gW = ceil(height/rows);
 
+  if ((width % (float(cols) * gW)) > 0.0) {
+      float gWOffset = width % (float(cols) * gW);
+      gW += gWOffset/float(rows);
+  }
+
+  if ((width % (float(rows) * gH)) > 0.0) {
+      float gHOffset = width % (float(rows) * gH);
+      gH += gHOffset/float(rows);
+  }
+
   colorMode(HSB, 359, 100, 100, 100);
   color c1 = color(0, 0, 100, 100);
   color c2 = color(0, 0, 0, 100);
