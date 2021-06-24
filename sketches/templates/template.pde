@@ -43,12 +43,12 @@ void draw() {
 }
 
 void keyPressed() {
-  // save a screenshot if 's' is presed
+  // save a screenshot if 's' is pressed
   if(key == 's') {
     save("result-"+nf(height)+"-"+nf(width)+"-"+nf(rows)+"-"+nf(cols)+"-"+screenshotSet+"-"+nf(screenshotCount,4)+".jpg");
     screenshotCount++;
   }
-  // redraw sketch if 'enter' is presed
+  // redraw sketch if 'enter' is pressed
   if(keyCode == 10) {
     redraw();
   }
