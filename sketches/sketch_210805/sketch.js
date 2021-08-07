@@ -1,8 +1,8 @@
 
-let cols = 8;
-let rows = 8;
-let cW = 75;
-let cH = 75;
+let cols = 10;
+let rows = 10;
+let cW = 65;
+let cH = 65;
 let extraLargeChance = 20;
 let cells = [];
 let extraLargeCells = [];
@@ -30,6 +30,9 @@ function setup() {
 }
 
 function populateCells() {
+  // extra large multiple
+  let eM = 1;
+
   for (var c = 0; c < cols; c++) {
     for (var r = 0; r < rows; r++) {
       let newCell = {
@@ -41,19 +44,22 @@ function populateCells() {
         h: cH,
         used: false,
       };
+
+      // extra large multiple
+      eM = ceil(random(3));
       cells.push(newCell);
       if (
         helpers.rollADie(extraLargeChance) === extraLargeChance
-        && newCell.x + newCell.w + cW < width
-        && newCell.y + newCell.h + cH < height
+        && newCell.x + newCell.w + (cW * eM) < width
+        && newCell.y + newCell.h + (cH * eM) < height
       ) {
         let extraLargeCell = {
           row: r,
           col: c,
           x: c * cW,
           y: r * cH,
-          w: newCell.w + cW,
-          h: newCell.h + cH,
+          w: newCell.w + (cW * eM),
+          h: newCell.h + (cH * eM),
           used: false,
         };
         extraLargeCells.push(extraLargeCell);
