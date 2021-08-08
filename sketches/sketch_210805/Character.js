@@ -45,10 +45,21 @@ class Character {
 
   };
 
+  /** ==========================================
+    EARS
+
+    Pick ears from a set of params, add additional
+    to the switch statement and incriment the
+    ears variable
+  =========================================== */
   ears = function () {
-    let earType = (new Helpers).rollADie(3);
+    let earType = (new Helpers).rollADie(5);
     switch (earType) {
       case (1):
+        /** ----------------------------------------------------
+         circle type ears
+        ------------------------------------------------------ */
+
         fill(this.accentColor.h, this.accentColor.s, this.accentColor.l, 100);
         stroke(this.bodyColor.h, this.bodyColor.s, this.bodyColor.l, 100);
         strokeWeight(this.w / 2 / 6);
@@ -67,84 +78,185 @@ class Character {
          );
         break;
       case (2):
-        stroke(this.bodyColor.h, this.bodyColor.s, this.bodyColor.l, 100);
-        strokeCap(ROUND);
-        strokeWeight(this.w / 2 / 2);
-        noFill();
-        line(
-          (this.w / 4) + (this.w / 2 / 4),
-          (this.h / 4),
-          (this.w / 4) + (this.w / 2 / 4),
-          this.centerV
-        );
-        line(
-          this.w - (this.w / 4) - (this.w / 2 / 4),
-          (this.h / 4),
-          this.w - (this.w / 4) - (this.w / 2 / 4),
-          this.centerV
-        );
-        stroke(this.accentColor.h, this.accentColor.s, this.accentColor.l, 100);
-        strokeWeight(this.w / 2 / 5);
-        noFill();
-        line(
-          (this.w / 4) + (this.w / 2 / 4),
-          (this.h / 4),
-          (this.w / 4) + (this.w / 2 / 4),
-          this.centerV
-        );
-        line(
-          this.w - (this.w / 4) - (this.w / 2 / 4),
-          (this.h / 4),
-          this.w - (this.w / 4) - (this.w / 2 / 4),
-          this.centerV
-        );
+        /** ----------------------------------------------------
+         strait up and down ears
+        ------------------------------------------------------ */
+
+        for (var e = 0; e < 2; e++) {
+          if (e === 0) {
+            strokeCap(ROUND);
+            stroke(this.bodyColor.h, this.bodyColor.s, this.bodyColor.l, 100);
+            fill(this.bodyColor.h, this.bodyColor.s, this.bodyColor.l, 100);
+            strokeWeight(this.w / 2 / 2);
+          } else {
+            stroke(this.accentColor.h, this.accentColor.s, this.accentColor.l, 100);
+            strokeWeight(this.w / 2 / 5);
+            noFill();
+          }
+
+          line(
+            (this.w / 4) + (this.w / 2 / 4),
+            (this.h / 4),
+            (this.w / 4) + (this.w / 2 / 4),
+            this.centerV
+          );
+          line(
+            this.w - (this.w / 4) - (this.w / 2 / 4),
+            (this.h / 4),
+            this.w - (this.w / 4) - (this.w / 2 / 4),
+            this.centerV
+          );
+        }
+
         break;
       case (3):
-        stroke(this.bodyColor.h, this.bodyColor.s, this.bodyColor.l, 100);
-        strokeCap(ROUND);
-        strokeWeight(this.w / 2 / 2);
-        noFill();
 
-        line(
-          this.centerH,
-          (this.w / 4),
-          this.centerH,
-          this.centerV
-        );
+        /** ----------------------------------------------------
+        Tripple round ears
+        ------------------------------------------------------ */
+        for (var e = 0; e < 2; e++) {
+          if (e === 0) {
+            strokeCap(ROUND);
+            stroke(this.bodyColor.h, this.bodyColor.s, this.bodyColor.l, 100);
+            fill(this.bodyColor.h, this.bodyColor.s, this.bodyColor.l, 100);
+            strokeWeight(this.w / 2 / 2);
+          } else {
+            stroke(this.accentColor.h, this.accentColor.s, this.accentColor.l, 100);
+            strokeWeight(this.w / 2 / 5);
+            noFill();
+          }
 
-        line(
-          (this.w / 4),
-          (this.h / 3),
-          (this.w / 4) + (this.w / 2 / 4),
-          this.centerV
-        );
-        line(
-          this.w - (this.w / 4),
-          (this.h / 3),
-          this.w - (this.w / 4) - (this.w / 2 / 4),
-          this.centerV
-        );
-        stroke(this.accentColor.h, this.accentColor.s, this.accentColor.l, 100);
-        strokeWeight(this.w / 2 / 5);
-        noFill();
-        line(
-          this.centerH,
-          (this.h / 4),
-          this.centerH,
-          this.centerV
-        );
-        line(
-          (this.w / 4),
-          (this.h / 3),
-          (this.w / 4) + (this.w / 2 / 4),
-          this.centerV
-        );
-        line(
-          this.w - (this.w / 4),
-          (this.h / 3),
-          this.w - (this.w / 4) - (this.w / 2 / 4),
-          this.centerV
-        );
+          line(
+            this.centerH,
+            (this.w / 4),
+            this.centerH,
+            this.centerV
+          );
+
+          line(
+            (this.w / 4),
+            (this.h / 3),
+            (this.w / 4) + (this.w / 2 / 4),
+            this.centerV
+          );
+          line(
+            this.w - (this.w / 4),
+            (this.h / 3),
+            this.w - (this.w / 4) - (this.w / 2 / 4),
+            this.centerV
+          );
+        }
+
+        break;
+      case (4):
+
+        /** ----------------------------------------------------
+        Triangle ears
+        ------------------------------------------------------ */
+
+        for (var e = 0; e < 2; e++) {
+          if (e === 0) {
+            strokeCap(ROUND);
+            stroke(this.bodyColor.h, this.bodyColor.s, this.bodyColor.l, 100);
+            noFill();
+            fill(this.bodyColor.h, this.bodyColor.s, this.bodyColor.l, 100);
+            strokeWeight(this.w / 2 / 4);
+          } else {
+            noStroke();
+            fill(this.accentColor.h, this.accentColor.s, this.accentColor.l, 100);
+          }
+
+          // left ear
+          triangle(
+            this.w / 4,
+            this.h / 4,
+            this.centerH + this.w / 14,
+            this.centerV,
+            this.w / 2.8,
+            this.centerV
+          );
+
+          // right ear
+          triangle(
+            this.w - (this.w / 4),
+            this.h / 4,
+            this.centerH - this.w / 14,
+            this.centerV,
+            this.w - (this.w / 2.8),
+            this.centerV
+          );
+        }
+
+        break;
+      case (5):
+        /** ----------------------------------------------------
+         "punk" ears
+        ------------------------------------------------------ */
+
+        for (var e = 0; e < 2; e++) {
+          if (e === 0) {
+            strokeCap(ROUND);
+            stroke(this.bodyColor.h, this.bodyColor.s, this.bodyColor.l, 100);
+            noFill();
+            fill(this.bodyColor.h, this.bodyColor.s, this.bodyColor.l, 100);
+            strokeWeight(this.w / 2 / 4);
+          } else {
+            noStroke();
+            fill(this.accentColor.h, this.accentColor.s, this.accentColor.l, 100);
+          }
+
+          // left ear
+          triangle(
+            this.w / 4,
+            this.h / 4,
+            this.centerH + this.w / 14,
+            this.centerV,
+            this.w / 2.8,
+            this.centerV
+          );
+
+          // left ear bottom
+          triangle(
+            this.w / 4,
+            this.centerV - this.h / 18,
+            this.centerH + this.w / 24,
+            this.centerV + this.h / 16,
+            this.w / 2.8,
+            this.centerV + this.h / 10
+          );
+
+          // center
+
+          triangle(
+            this.centerH,
+            this.h / 5,
+            this.centerH + this.w / 8,
+            this.centerV,
+            this.centerH - this.w / 8,
+            this.centerV
+          );
+
+          // right ear
+          triangle(
+            this.w - (this.w / 4),
+            this.h / 4,
+            this.centerH - this.w / 14,
+            this.centerV,
+            this.w - (this.w / 2.8),
+            this.centerV
+          );
+
+          // left ear bottom
+          triangle(
+            this.w - this.w / 4,
+            this.centerV - this.h / 18,
+            this.w - (this.centerH + this.w / 24),
+            this.centerV + this.h / 16,
+            this.w - (this.w / 2.8),
+            this.centerV + this.h / 10
+          );
+        }
+
         break;
     }
   };

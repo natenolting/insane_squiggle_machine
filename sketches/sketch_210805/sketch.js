@@ -1,8 +1,8 @@
 
-let cols = 10;
-let rows = 10;
-let cW = 65;
-let cH = 65;
+let cols = 7;
+let rows = 7;
+let cW = 100;
+let cH = 100;
 let extraLargeChance = 20;
 let cells = [];
 let extraLargeCells = [];
