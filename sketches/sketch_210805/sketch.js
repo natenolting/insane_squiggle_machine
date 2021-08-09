@@ -6,12 +6,18 @@ let cH = 100;
 let extraLargeChance = 20;
 let cells = [];
 let extraLargeCells = [];
-//let hexColors = ['f72585', 'b5179e', '7209b7', '560bad', '480ca8', '3a0ca3', '3f37c9', '4361ee', '4895ef', '4cc9f0'];
-//let hexColors = ["d9ed92","b5e48c","99d98c","76c893","52b69a","34a0a4","168aad","1a759f","1e6091","184e77"];
-//let hexColors = ["f94144","f3722c","f8961e","f9844a","f9c74f","90be6d","43aa8b","4d908e","577590","277da1"];
-//let hexColors = ["ffbe0b","fb5607","ff006e","8338ec","3a86ff"];
-let hexColors = ["011627","fdfffc","2ec4b6","e71d36","ff9f1c"];
-//let hexColors = ["2b2d42","8d99ae","edf2f4","ef233c","d90429"];
+let pallets = [
+  ['f72585', 'b5179e', '7209b7', '560bad', '480ca8', '3a0ca3', '3f37c9', '4361ee', '4895ef', '4cc9f0'],
+  ["d9ed92","b5e48c","99d98c","76c893","52b69a","34a0a4","168aad","1a759f","1e6091","184e77"],
+  ["f94144","f3722c","f8961e","f9844a","f9c74f","90be6d","43aa8b","4d908e","577590","277da1"],
+  ["ffbe0b","fb5607","ff006e","8338ec","3a86ff"],
+  ["011627","fdfffc","2ec4b6","e71d36","ff9f1c"],
+  ["2b2d42","8d99ae","edf2f4","ef233c","d90429"],
+  ["ffffff","8ecae6","219ebc","023047","ffb703","fb8500"],
+  ["3d5a80","98c1d9","e0fbfc","ee6c4d","293241"],
+]
+
+let hexColors;
 let colors = [];
 let helpers = new Helpers();
 let colorClass = new Colors();
@@ -20,13 +26,6 @@ let saveCount = 0;
 function setup() {
   createCanvas(cols * cW, rows * cH);
   colorMode(HSL, 359, 100, 100, 100);
-  for (var i = 0; i < hexColors.length; i++) {
-    let rgb = colorClass.HEXtoRGB(hexColors[i]);
-    let hsl = colorClass.RGBtoHSL(rgb[0], rgb[1], rgb[2]);
-    colors.push(hsl);
-  }
-
-  populateCells();
 }
 
 function populateCells() {
@@ -94,27 +93,54 @@ function populateCells() {
 }
 
 function saveFileName() {
-  let fileName = `${saveId}_${saveCount}.png`;
+  let formattedSaveCount = FormatNumberLength(saveCount-90,4);
+  let fileName = `${saveId}_${formattedSaveCount}.png`;
   saveCount++;
   return fileName;
 }
 
 function keyPressed() {
   if (key === 'Enter') {
-    cells = [];
-    extraLargeCells = [];
-    populateCells();
-
     redraw();
   }
 
   if (key === 's') {
     save(saveFileName());
   }
+
+  if (key === 'g') {
+    // generate stack of images
+    for (var i = 0; i < 25; i++) {
+      redraw();
+      save(saveFileName());
+    }
+    return false;
+
+  }
 }
+
+function FormatNumberLength(num, length) {
+    var r = "" + num;
+    while (r.length < length) {
+        r = "0" + r;
+    }
+    return r;
+}
+
 
 function draw() {
   noLoop();
+  hexColors = pallets[Math.floor(_.random(pallets.length - 1))];
+
+  colors = [];
+  for (var i = 0; i < hexColors.length; i++) {
+    let rgb = colorClass.HEXtoRGB(hexColors[i]);
+    colors.push(colorClass.RGBtoHSL(rgb[0], rgb[1], rgb[2]));
+  }
+  cells = [];
+  extraLargeCells = [];
+  populateCells();
+
   let bgColor = random(colors);
   background(bgColor.h, bgColor.s, bgColor.l, 100);
 
@@ -137,12 +163,19 @@ function draw() {
 
 // https://editor.p5js.org/eric/sketches/HkW2DRKnl
 function intersection(rect1, rect2) {
-  var x1 = rect2.x, y1 = rect2.y, x2 = x1+rect2.w, y2 = y1+rect2.h;
+  let x1 = rect2.x;
+  let y1 = rect2.y;
+  let x2 = x1 + rect2.w;
+  let y2 = y1 + rect2.h;
   if (rect1.x > x1) { x1 = rect1.x; }
+
   if (rect1.y > y1) { y1 = rect1.y; }
+
   if (rect1.x + rect1.w < x2) { x2 = rect1.x + rect1.w; }
+
   if (rect1.y + rect1.h < y2) { y2 = rect1.y + rect1.h; }
-  return (x2 <= x1 || y2 <= y1) ? false : { x: x1, y: y1, w: x2-x1, h: y2-y1 };
+
+  return (x2 <= x1 || y2 <= y1) ? false : { x: x1, y: y1, w: x2 - x1, h: y2 - y1 };
 }
 
 function doCell(cell) {
@@ -154,12 +187,9 @@ function doCell(cell) {
   let facialColor = newColors[2];
   let accentColor = newColors[3];
 
-  let character = new Character(cell, bodyColor, facialColor, accentColor);
-  fill(bgColor.h, bgColor.s, bgColor.l, 100);
-  noStroke();
+  let character = new Character(cell, bgColor, bodyColor, facialColor, accentColor);
   push();
   translate(cell.x, cell.y);
-  rect(0, 0, cell.w, cell.h);
   character.buildCharacter();
   pop();
 

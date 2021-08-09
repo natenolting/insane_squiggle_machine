@@ -1,6 +1,7 @@
 class Character {
-  constructor(cell, bodyColor, facialColor, accentColor) {
+  constructor(cell, bgColor, bodyColor, facialColor, accentColor) {
     this.cell = cell;
+    this.bgColor = bgColor;
     this.bodyColor = bodyColor;
     this.facialColor = facialColor;
     this.accentColor = accentColor;
@@ -8,6 +9,8 @@ class Character {
     this.h = this.cell.h;
     this.centerV = this.cell.w / 2;
     this.centerH = this.cell.h / 2;
+
+    this.helpers = new Helpers();
   }
 
   buildCharacter = function () {
@@ -21,6 +24,12 @@ class Character {
     //
     // // center horizontal, debug
     // line(0, centerH, w, centerH);
+
+    /** ==========================================
+      The background
+     ========================================== */
+
+    this.background();
 
     /** ==========================================
       The body
@@ -46,38 +55,47 @@ class Character {
   };
 
   /** ==========================================
+    BACKGROUND
+  =========================================== */
+  background = function () {
+
+    fill(this.bgColor.h, this.bgColor.s, this.bgColor.l, 100);
+    noStroke();
+    rect(0, 0, this.cell.w, this.cell.h);
+
+    let bgTexture = (new Helpers).rollADie(3);
+    let bgTextureColor;
+    switch (bgTexture) {
+      case (1):
+        bgTextureColor = this.bodyColor;
+        break;
+      case (2):
+        bgTextureColor = this.accentColor;
+        break;
+      case (3):
+        bgTextureColor = this.facialColor;
+        break;
+    }
+    this.doTexture(
+      [0, 0, this.cell.w, this.cell.h],
+      bgTextureColor,
+      ((this.w + this.h) / 2) / 200,
+      this.w * this.h / 15
+    );
+
+  };
+  /** ==========================================
     EARS
 
     Pick ears from a set of params, add additional
-    to the switch statement and incriment the
+    to the switch statement and increment the
     ears variable
   =========================================== */
   ears = function () {
-    let earType = (new Helpers).rollADie(6);
+    let earType = (new Helpers).rollADie(60);
     switch (earType) {
-      case (1):
-        /** ----------------------------------------------------
-         circle type ears
-        ------------------------------------------------------ */
 
-        fill(this.accentColor.h, this.accentColor.s, this.accentColor.l, 100);
-        stroke(this.bodyColor.h, this.bodyColor.s, this.bodyColor.l, 100);
-        strokeWeight(this.w / 2 / 6);
-        ellipse(
-           this.w / 4 + this.w / 16,
-           this.h / 4 + this.h / 16,
-           this.w / 4,
-           this.w / 4
-         );
-
-        ellipse(
-           this.w - this.w / 4 - this.w / 16,
-           this.h / 4 + this.h / 16,
-           this.w / 4,
-           this.h / 4
-         );
-        break;
-      case (2):
+      case (10):
         /** ----------------------------------------------------
          strait up and down ears
         ------------------------------------------------------ */
@@ -109,7 +127,7 @@ class Character {
         }
 
         break;
-      case (3):
+      case (20):
 
         /** ----------------------------------------------------
         Tripple round ears
@@ -148,7 +166,7 @@ class Character {
         }
 
         break;
-      case (4):
+      case (30):
 
         /** ----------------------------------------------------
         Triangle ears
@@ -188,7 +206,7 @@ class Character {
         }
 
         break;
-      case (5):
+      case (40):
         /** ----------------------------------------------------
          "punk" ears
         ------------------------------------------------------ */
@@ -258,7 +276,7 @@ class Character {
         }
 
         break;
-      case (6):
+      case (50):
         /** ----------------------------------------------------
         Horns
         ------------------------------------------------------ */
@@ -319,9 +337,69 @@ class Character {
         endShape();
 
         break;
+
+      case (60):
+        /** ----------------------------------------------------
+        Halo
+        ------------------------------------------------------ */
+        noFill();
+        strokeCap(ROUND);
+        stroke(this.accentColor.h, this.accentColor.s, this.accentColor.l, 100);
+        strokeWeight(this.w / 16);
+        ellipse(
+          this.centerH,
+          this.h / 7,
+          this.w * .66,
+          this.h / 8
+        );
+        if ((new Helpers).coinFlip()) {
+          line(
+            this.centerH - (this.w * .66) / 2,
+            this.h / 7,
+            this.centerH - this.w / 6,
+            this.centerV
+          );
+        } else {
+          line(
+            this.centerH + (this.w * .66) / 2,
+            this.h / 7,
+            this.centerH + this.w / 6,
+            this.centerV
+          );
+        }
+
+        break;
+      default:
+        /** ----------------------------------------------------
+         circle type ears
+        ------------------------------------------------------ */
+
+        fill(this.accentColor.h, this.accentColor.s, this.accentColor.l, 100);
+        stroke(this.bodyColor.h, this.bodyColor.s, this.bodyColor.l, 100);
+        strokeWeight(this.w / 2 / 6);
+        ellipse(
+           this.w / 4 + this.w / 16,
+           this.h / 4 + this.h / 16,
+           this.w / 4,
+           this.w / 4
+         );
+
+        ellipse(
+           this.w - this.w / 4 - this.w / 16,
+           this.h / 4 + this.h / 16,
+           this.w / 4,
+           this.h / 4
+         );
+        break;
     }
   };
+  /** ==========================================
+    Body
 
+    Pick body from a set of params, add additional
+    to the switch statement and increment the
+    ears variable
+  =========================================== */
   body = function () {
     noStroke();
     fill(this.bodyColor.h, this.bodyColor.s, this.bodyColor.l, 100);
@@ -349,24 +427,135 @@ class Character {
     }
   };
 
+  /** ==========================================
+    EYES
+
+    Pick eyes from a set of params, add additional
+    to the switch statement and increment the
+    ears variable
+  =========================================== */
   eyes = function () {
-    noFill();
-    stroke(this.facialColor.h, this.facialColor.s, this.facialColor.l, 100);
-    strokeCap(ROUND);
-    strokeWeight(this.w / 2 / 5);
 
-    line(
-      (this.w / 4) + (this.w / 2 / 3),
-      this.centerH,
-      (this.w / 4) + (this.w / 2 / 3),
-      this.centerH + (this.w / 2 / 2.5)
-    );
+    let earType = (new Helpers).rollADie(100);
+    switch (earType) {
 
-    line(
-      this.w  - (this.w / 4) - (this.w / 2 / 3),
-      this.centerH,
-      this.w  - (this.w / 4) - (this.w / 2 / 3),
-      this.centerH + (this.w / 2 / 2.5)
-    );
+      case (50):
+        /** ----------------------------------------------------
+        Angry Eyes
+        ------------------------------------------------------ */
+        noFill();
+        stroke(this.facialColor.h, this.facialColor.s, this.facialColor.l, 100);
+        strokeCap(ROUND);
+        strokeWeight(this.w / 16);
+
+        line(
+          (this.w / 4) + (this.w / 8),
+          this.centerV + (this.w / 16),
+          (this.w / 4) + (this.w / 6.25),
+          this.centerV + (this.h / 5)
+        );
+
+        line(
+          this.w  - (this.w / 4) - (this.w / 8),
+          this.centerV + (this.w / 16),
+          this.w  - (this.w / 4) - (this.w / 6.25),
+          this.centerV + (this.h / 5)
+        );
+        break;
+
+      case (75):
+        /** ----------------------------------------------------
+        Dead Eyes
+        ------------------------------------------------------ */
+        noFill();
+        stroke(this.facialColor.h, this.facialColor.s, this.facialColor.l, 100);
+        strokeCap(ROUND);
+        strokeWeight(this.w / 20);
+
+        line(
+          this.centerH - (this.w / 6),
+          this.centerV,
+          this.centerH - (this.w / 18),
+          this.centerV + (this.w / 6),
+        );
+        line(
+          this.centerH - (this.w / 18),
+          this.centerV,
+          this.centerH - (this.w / 6),
+          this.centerV + (this.w / 6),
+        );
+
+        line(
+          this.centerH + (this.w / 6),
+          this.centerV,
+          this.centerH + (this.w / 18),
+          this.centerV + (this.w / 6),
+        );
+        line(
+          this.centerH + (this.w / 18),
+          this.centerV,
+          this.centerH + (this.w / 6),
+          this.centerV + (this.w / 6),
+        );
+
+        break;
+      default:
+        /** ----------------------------------------------------
+        Basic Eyes
+        ------------------------------------------------------ */
+        noFill();
+        stroke(this.facialColor.h, this.facialColor.s, this.facialColor.l, 100);
+        strokeCap(ROUND);
+        strokeWeight(this.w / 10);
+
+        line(
+          (this.w / 4) + (this.w / 6),
+          this.centerV,
+          (this.w / 4) + (this.w / 6),
+          this.centerV + (this.h / 5)
+        );
+
+        line(
+          this.w  - (this.w / 4) - (this.w / 6),
+          this.centerV,
+          this.w  - (this.w / 4) - (this.w / 6),
+          this.centerV + (this.h / 5)
+        );
+        break;
+    };
   };
+
+  doTexture = function (coodinates, color, size, max) {
+    let x1 = coodinates[0];
+    let y1 = coodinates[1];
+    let x2 = coodinates[2];
+    let y2 = coodinates[3];
+    for (var i = 0; i < max; i++) {
+      let tx1 = floor(random(x1, x2));
+      let ty1 = floor(random(y1, y2));
+      noStroke();
+      fill(color.h, color.s, color.l, 100);
+
+      if (this.helpers.coinFlip()) {
+        triangle(
+          tx1,
+          ty1,
+          tx1 + map(size, 0, max, size, size * 1.5),
+          ty1 + map(size, 0, max, size, size * 1.5),
+          tx1 - map(size, 0, max, size, size * 1.5),
+          ty1 + map(size, 0, max, size, size * 1.5)
+        );
+      } else {
+        triangle(
+          tx1,
+          ty1,
+          tx1 - map(size, 0, max, size, size * 1.5),
+          ty1 - map(size, 0, max, size, size * 1.5),
+          tx1 + map(size, 0, max, size, size * 1.5),
+          ty1 - map(size, 0, max, size, size * 1.5)
+        );
+      }
+    }
+  };
+
 }
