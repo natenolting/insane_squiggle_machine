@@ -65,18 +65,15 @@ class Character {
     noStroke();
     rect(0, 0, this.cell.w, this.cell.h);
 
-    let bgTexture = (new Helpers).rollADie(3);
+    let bgTexture = (new Helpers).rollADie(2);
     let bgTextureColor;
-    let whichTexture = this.helpers.rollADie(100);
+    let whichTexture = this.helpers.rollADie(50);
 
     switch (bgTexture) {
       case (1):
-        bgTextureColor = this.bodyColor;
-        break;
-      case (2):
         bgTextureColor = this.accentColor;
         break;
-      case (3):
+      case (2):
         bgTextureColor = this.facialColor;
         break;
     }
@@ -90,6 +87,15 @@ class Character {
           this.w * this.h / 30
         );
         break;
+      case (50):
+        this.doBubbles(
+          [0, 0, this.cell.w, this.cell.h],
+          bgTextureColor,
+          ((this.w + this.h) / 4),
+          this.w * this.h / 2
+        );
+        break;
+
     }
 
   };
@@ -371,30 +377,38 @@ class Character {
         /** ----------------------------------------------------
         Halo
         ------------------------------------------------------ */
-        noFill();
-        strokeCap(ROUND);
-        stroke(this.accentColor.h, this.accentColor.s, this.accentColor.l, 100);
-        strokeWeight(this.w / 16);
-        ellipse(
-          this.centerV,
-          this.h / 7,
-          this.w * .66,
-          this.h / 8
-        );
-        if ((new Helpers).coinFlip()) {
-          line(
-            this.centerV - (this.w * .66) / 2,
+        for (var e = 0; e < 2; e++) {
+          noFill();
+          strokeCap(ROUND);
+          if (e === 0) {
+            stroke(this.bgColor.h, this.bgColor.s, this.bgColor.l, 100);
+            strokeWeight(this.w / 8);
+          } else {
+            stroke(this.accentColor.h, this.accentColor.s, this.accentColor.l, 100);
+            strokeWeight(this.w / 16);
+          }
+
+          ellipse(
+            this.centerV,
             this.h / 7,
-            this.centerV - this.w / 6,
-            this.centerH
+            this.w * .66,
+            this.h / 8
           );
-        } else {
-          line(
-            this.centerV + (this.w * .66) / 2,
-            this.h / 7,
-            this.centerV + this.w / 6,
-            this.centerH
-          );
+          if ((new Helpers).coinFlip()) {
+            line(
+              this.centerV - (this.w * .66) / 2,
+              this.h / 7,
+              this.centerV - this.w / 6,
+              this.centerH
+            );
+          } else {
+            line(
+              this.centerV + (this.w * .66) / 2,
+              this.h / 7,
+              this.centerV + this.w / 6,
+              this.centerH
+            );
+          }
         }
 
         break;
@@ -584,6 +598,58 @@ class Character {
           ty1 - map(size, 0, max, size, size * 1.5)
         );
       }
+    }
+  };
+
+  doBubbles = function (coodinates, color, size, max) {
+    let x1 = coodinates[0];
+    let y1 = coodinates[1];
+    let x2 = coodinates[2];
+    let y2 = coodinates[3];
+    let iterator = 0;
+    let internalIt = 0;
+    let bubbles = [];
+    while (iterator < max) {
+      internalIt++;
+      if (internalIt >= 10000) {
+        break;
+      }
+
+      let centerX = random(x1, x2);
+      let centerY = random(y1, y2);
+      let rad = random(size / 4, size);
+      if (
+        centerX - rad - (this.w / 24) > x1
+        && centerX + rad + (this.w / 24) < x2
+        && centerY - rad - (this.h / 24) > y1
+        && centerY + rad + (this.h / 24) < y2
+      ) {
+        let b = {
+          x: centerX,
+          y: centerY,
+          r: rad,
+        };
+        let overlapping = false;
+        for (var i = 0; i < bubbles.length; i++) {
+          let other = bubbles[i];
+          let d = dist(b.x, b.y, other.x, other.y);
+          if (d < b.r + other.r) {
+            overlapping = true;
+            break;
+          }
+        }
+
+        if (!overlapping) {
+          bubbles.push(b);
+          iterator++;
+        }
+      }
+    }
+
+    noStroke();
+    fill(color.h, color.s, color.l, 100);
+    for (var i = 0; i < bubbles.length; i++) {
+      ellipse(bubbles[i].x, bubbles[i].y, bubbles[i].r * 2);
     }
   };
 
