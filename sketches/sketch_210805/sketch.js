@@ -1,20 +1,25 @@
 
 let cols = 6;
-let rows = 7;
+let rows = 8;
 let cW = 100;
 let cH = 100;
 let extraLargeChance = 20;
 let cells = [];
 let extraLargeCells = [];
 let pallets = [
-  ['f72585', 'b5179e', '7209b7', '560bad', '480ca8', '3a0ca3', '3f37c9', '4361ee', '4895ef', '4cc9f0'],
-  ["d9ed92","b5e48c","99d98c","76c893","52b69a","34a0a4","168aad","1a759f","1e6091","184e77"],
-  ["f94144","f3722c","f8961e","f9844a","f9c74f","90be6d","43aa8b","4d908e","577590","277da1"],
-  ["ffbe0b","fb5607","ff006e","8338ec","3a86ff"],
-  ["011627","fdfffc","2ec4b6","e71d36","ff9f1c"],
+  ["e63946","f1faee","a8dadc","457b9d","1d3557"],
+  ["000000","14213d","fca311","e5e5e5","ffffff"],
+  ["f72585","b5179e","7209b7","560bad","480ca8","3a0ca3","3f37c9","4361ee","4895ef","4cc9f0"],
+  ["003049","d62828","f77f00","fcbf49","eae2b7"],
+  ["006d77","83c5be","edf6f9","ffddd2","e29578"],
   ["2b2d42","8d99ae","edf2f4","ef233c","d90429"],
-  ["ffffff","8ecae6","219ebc","023047","ffb703","fb8500"],
-  ["3d5a80","98c1d9","e0fbfc","ee6c4d","293241"],
+  ["f4f1de","e07a5f","3d405b","81b29a","f2cc8f"],
+  ["d8f3dc","b7e4c7","95d5b2","74c69d","52b788","40916c","2d6a4f","1b4332","081c15"],
+  ["f94144","f3722c","f8961e","f9c74f","90be6d","43aa8b","577590"],
+  ["7400b8","6930c3","5e60ce","5390d9","4ea8de","48bfe3","56cfe1","64dfdf","72efdd","80ffdb"],
+  ["f94144","f3722c","f8961e","f9c74f","90be6d","43aa8b","577590"],
+  ["335c67","fff3b0","e09f3e","9e2a2b","540b0e"],
+  ["007f5f","2b9348","55a630","80b918","aacc00","bfd200","d4d700","dddf00","eeef20","ffff3f"],
 ]
 
 let hexColors;
@@ -28,10 +33,11 @@ function setup() {
   colorMode(HSL, 359, 100, 100, 100);
 }
 
-function populateCells() {
+function populateCells(genExtraLarge = false) {
   // extra large multiple
   let eM = 1;
-
+  let newCells = [];
+  let newExtraLargeCells = [];
   for (var c = 0; c < cols; c++) {
     for (var r = 0; r < rows; r++) {
       let newCell = {
@@ -46,9 +52,10 @@ function populateCells() {
 
       // extra large multiple
       eM = ceil(random(3));
-      cells.push(newCell);
+      newCells.push(newCell);
       if (
-        helpers.rollADie(extraLargeChance) === extraLargeChance
+        genExtraLarge
+        && helpers.rollADie(extraLargeChance) === extraLargeChance
         && newCell.x + newCell.w + (cW * eM) < width
         && newCell.y + newCell.h + (cH * eM) < height
       ) {
@@ -61,35 +68,36 @@ function populateCells() {
           h: newCell.h + (cH * eM),
           used: false,
         };
-        extraLargeCells.push(extraLargeCell);
+        newExtraLargeCells.push(extraLargeCell);
       }
     }
   }
 
   // check for large cells that overlap others down the line
-  for (var i = 0; i < extraLargeCells.length; i++) {
-    extraLargeCells[i];
-    for (var e = i + 1; e < extraLargeCells.length; e++) {
-      if (intersection(extraLargeCells[i], extraLargeCells[e])) {
-        extraLargeCells[e].used = true;
+  for (var i = 0; i < newExtraLargeCells.length; i++) {
+    for (var e = i + 1; e < newExtraLargeCells.length; e++) {
+      if (intersection(newExtraLargeCells[i], newExtraLargeCells[e])) {
+        newExtraLargeCells[e].used = true;
       }
     }
   }
 
   // filter out overlapping
-  _.remove(extraLargeCells, function (o) { return o.used; });
+  _.remove(newExtraLargeCells, function (o) { return o.used; });
 
   // check for normal cells that are overlapped by the large cells
-  for (var i = 0; i < cells.length; i++) {
-    for (var e = 0; e < extraLargeCells.length; e++) {
-      if (intersection(cells[i], extraLargeCells[e])) {
-        cells[i].used = true;
+  for (var i = 0; i < newCells.length; i++) {
+    for (var e = 0; e < newExtraLargeCells.length; e++) {
+      if (intersection(newCells[i], newExtraLargeCells[e])) {
+        newCells[i].used = true;
       }
     }
   }
 
   // filter out overlapping
-  _.remove(cells, function (o) { return o.used; });
+  _.remove(newCells, function (o) { return o.used; });
+
+  return [newCells, newExtraLargeCells];
 }
 
 function saveFileName() {
@@ -119,6 +127,7 @@ function keyPressed() {
   }
 }
 
+// https://editor.p5js.org/ChrisOrban/sketches/ryXx1hjWZ
 function FormatNumberLength(num, length) {
     var r = "" + num;
     while (r.length < length) {
@@ -130,19 +139,52 @@ function FormatNumberLength(num, length) {
 
 function draw() {
   noLoop();
+  let backgroundCells = [];
+  let currentCells = [];
+  let newColors = []
+  // reset the columns and rows
+  cols = ceil(random(2,10));
+  rows = ceil(random(cols, cols + cols / 2));
+  cW = width / cols;
+  cH = height / rows;
+
   hexColors = pallets[Math.floor(_.random(pallets.length - 1))];
 
   colors = [];
   for (var i = 0; i < hexColors.length; i++) {
     let rgb = colorClass.HEXtoRGB(hexColors[i]);
-    colors.push(colorClass.RGBtoHSL(rgb[0], rgb[1], rgb[2]));
+    let hsl = colorClass.RGBtoHSL(rgb[0], rgb[1], rgb[2]);
+    let hShift = ceil(random(-25, 25));
+    let oH = hsl.h;
+    if (oH + hShift > 360) {
+      hsl.h = oH + hShift - 360;
+    } else if (oH + hShift < 0) {
+      hsl.h = oH + hShift + 360;
+    } else {
+      hsl.h = oH + hShift;
+    }
+    colors.push(hsl);
   }
-  cells = [];
-  extraLargeCells = [];
-  populateCells();
 
-  let bgColor = random(colors);
-  background(bgColor.h, bgColor.s, bgColor.l, 100);
+  newColors = helpers.shuffleArray(colors);
+  background(newColors[0].h, newColors[0].s, newColors[0].l, 100);
+
+  // To ensure there is no graps in the grid, make an initial
+  // set of background cells. These will be covered by the currentCells
+  // array but any gaps will be filled with a default size cell
+  backgroundCells = populateCells(false);
+  for (var i = 0; i < backgroundCells[0].length; i++) {
+    if (backgroundCells[0][i].used === true) {
+      continue;
+    }
+
+    doCell(backgroundCells[0][i]);
+  }
+
+  // Build the current cells and display
+  currentCells = populateCells(true);
+  cells = currentCells[0];
+  extraLargeCells = currentCells[1];
 
   for (var i = 0; i < cells.length; i++) {
     if (cells[i].used === true) {

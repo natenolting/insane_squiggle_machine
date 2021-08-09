@@ -52,6 +52,8 @@ class Character {
        The accents
     ========================================== */
 
+
+
   };
 
   /** ==========================================
@@ -65,6 +67,8 @@ class Character {
 
     let bgTexture = (new Helpers).rollADie(3);
     let bgTextureColor;
+    let whichTexture = this.helpers.rollADie(100);
+
     switch (bgTexture) {
       case (1):
         bgTextureColor = this.bodyColor;
@@ -76,12 +80,17 @@ class Character {
         bgTextureColor = this.facialColor;
         break;
     }
-    this.doTexture(
-      [0, 0, this.cell.w, this.cell.h],
-      bgTextureColor,
-      ((this.w + this.h) / 2) / 200,
-      this.w * this.h / 15
-    );
+
+    switch (whichTexture) {
+      default:
+        this.doTexture(
+          [0, 0, this.cell.w, this.cell.h],
+          bgTextureColor,
+          ((this.w + this.h) / 2) / 200,
+          this.w * this.h / 30
+        );
+        break;
+    }
 
   };
   /** ==========================================
@@ -145,10 +154,10 @@ class Character {
           }
 
           line(
-            this.centerH,
+            this.centerV,
             (this.w / 4),
-            this.centerH,
-            this.centerV
+            this.centerV,
+            this.centerH
           );
 
           line(
@@ -188,20 +197,20 @@ class Character {
           triangle(
             this.w / 4,
             this.h / 4,
-            this.centerH + this.w / 14,
-            this.centerV,
+            this.centerV + this.w / 14,
+            this.centerH,
             this.w / 2.8,
-            this.centerV
+            this.centerH
           );
 
           // right ear
           triangle(
             this.w - (this.w / 4),
             this.h / 4,
-            this.centerH - this.w / 14,
-            this.centerV,
+            this.centerV - this.w / 14,
+            this.centerH,
             this.w - (this.w / 2.8),
-            this.centerV
+            this.centerH
           );
         }
 
@@ -227,51 +236,71 @@ class Character {
           triangle(
             this.w / 4,
             this.h / 4,
-            this.centerH + this.w / 14,
-            this.centerV,
+            this.centerV + this.w / 14,
+            this.centerH,
             this.w / 2.8,
-            this.centerV
+            this.centerH
+          );
+
+          // left ear middle
+          triangle(
+            this.w / 4,
+            this.centerH - this.h / 18,
+            this.centerV + this.w / 24,
+            this.centerH + this.h / 16,
+            this.w / 2.8,
+            this.centerH + this.h / 10
           );
 
           // left ear bottom
           triangle(
-            this.w / 4,
-            this.centerV - this.h / 18,
-            this.centerH + this.w / 24,
-            this.centerV + this.h / 16,
+            this.w / 3.5,
+            this.centerH + this.h / 18,
+            this.centerV,
+            this.centerH,
             this.w / 2.8,
-            this.centerV + this.h / 10
+            this.centerH + this.h / 10
           );
 
           // center
 
           triangle(
-            this.centerH,
-            this.h / 5,
-            this.centerH + this.w / 8,
             this.centerV,
-            this.centerH - this.w / 8,
-            this.centerV
+            this.h / 5,
+            this.centerV + this.w / 8,
+            this.centerH,
+            this.centerV - this.w / 8,
+            this.centerH
           );
 
           // right ear
           triangle(
             this.w - (this.w / 4),
             this.h / 4,
-            this.centerH - this.w / 14,
-            this.centerV,
+            this.centerV - this.w / 14,
+            this.centerH,
             this.w - (this.w / 2.8),
-            this.centerV
+            this.centerH
+          );
+
+          // left ear center
+          triangle(
+            this.w - this.w / 4,
+            this.centerH - this.h / 18,
+            this.w - (this.centerV + this.w / 24),
+            this.centerH + this.h / 16,
+            this.w - (this.w / 2.8),
+            this.centerH + this.h / 10
           );
 
           // left ear bottom
           triangle(
-            this.w - this.w / 4,
-            this.centerV - this.h / 18,
-            this.w - (this.centerH + this.w / 24),
-            this.centerV + this.h / 16,
+            this.w - (this.w / 3.5),
+            this.centerH + this.h / 18,
+            this.centerV,
+            this.centerH,
             this.w - (this.w / 2.8),
-            this.centerV + this.h / 10
+            this.centerH + this.h / 10
           );
         }
 
@@ -303,13 +332,13 @@ class Character {
           this.w / hornDist,
           this.h / hornDist,
           this.w / hornDist,
-          this.centerV - (this.h / hornDist),
-          this.centerH,
-          this.centerV - (this.h / hornDist)
+          this.centerH - (this.h / hornDist),
+          this.centerV,
+          this.centerH - (this.h / hornDist)
         );
         bezierVertex(
           this.w - (this.w / hornDist),
-          this.centerV - (this.h / hornDist),
+          this.centerH - (this.h / hornDist),
           this.w - (this.w / hornDist),
           this.h / hornDist,
           this.w - (this.w / hornDist),
@@ -319,14 +348,14 @@ class Character {
         bezierVertex(
           this.w - (this.w / hornDist),
           this.h / hornDist,
-          this.centerH + (this.w / 2.5),
+          this.centerV + (this.w / 2.5),
           this.h,
-          this.centerH,
+          this.centerV,
           this.h,
         );
 
         bezierVertex(
-          this.centerH - (this.w / 2.5),
+          this.centerV - (this.w / 2.5),
           this.h,
           (this.w / hornDist),
           (this.w / hornDist),
@@ -347,24 +376,24 @@ class Character {
         stroke(this.accentColor.h, this.accentColor.s, this.accentColor.l, 100);
         strokeWeight(this.w / 16);
         ellipse(
-          this.centerH,
+          this.centerV,
           this.h / 7,
           this.w * .66,
           this.h / 8
         );
         if ((new Helpers).coinFlip()) {
           line(
-            this.centerH - (this.w * .66) / 2,
+            this.centerV - (this.w * .66) / 2,
             this.h / 7,
-            this.centerH - this.w / 6,
-            this.centerV
+            this.centerV - this.w / 6,
+            this.centerH
           );
         } else {
           line(
-            this.centerH + (this.w * .66) / 2,
+            this.centerV + (this.w * .66) / 2,
             this.h / 7,
-            this.centerH + this.w / 6,
-            this.centerV
+            this.centerV + this.w / 6,
+            this.centerH
           );
         }
 
@@ -381,7 +410,7 @@ class Character {
            this.w / 4 + this.w / 16,
            this.h / 4 + this.h / 16,
            this.w / 4,
-           this.w / 4
+           this.h / 4
          );
 
         ellipse(
@@ -436,10 +465,10 @@ class Character {
   =========================================== */
   eyes = function () {
 
-    let earType = (new Helpers).rollADie(100);
+    let earType = (new Helpers).rollADie(50);
     switch (earType) {
 
-      case (50):
+      case (10):
         /** ----------------------------------------------------
         Angry Eyes
         ------------------------------------------------------ */
@@ -450,20 +479,20 @@ class Character {
 
         line(
           (this.w / 4) + (this.w / 8),
-          this.centerV + (this.w / 16),
+          this.centerH + (this.w / 16),
           (this.w / 4) + (this.w / 6.25),
-          this.centerV + (this.h / 5)
+          this.centerH + (this.h / 5)
         );
 
         line(
           this.w  - (this.w / 4) - (this.w / 8),
-          this.centerV + (this.w / 16),
+          this.centerH + (this.w / 16),
           this.w  - (this.w / 4) - (this.w / 6.25),
-          this.centerV + (this.h / 5)
+          this.centerH + (this.h / 5)
         );
         break;
 
-      case (75):
+      case (20):
         /** ----------------------------------------------------
         Dead Eyes
         ------------------------------------------------------ */
@@ -473,29 +502,29 @@ class Character {
         strokeWeight(this.w / 20);
 
         line(
-          this.centerH - (this.w / 6),
-          this.centerV,
-          this.centerH - (this.w / 18),
-          this.centerV + (this.w / 6),
+          this.centerV - (this.w / 6),
+          this.centerH,
+          this.centerV - (this.w / 18),
+          this.centerH + (this.w / 6),
         );
         line(
-          this.centerH - (this.w / 18),
-          this.centerV,
-          this.centerH - (this.w / 6),
-          this.centerV + (this.w / 6),
+          this.centerV - (this.w / 18),
+          this.centerH,
+          this.centerV - (this.w / 6),
+          this.centerH + (this.w / 6),
         );
 
         line(
-          this.centerH + (this.w / 6),
-          this.centerV,
-          this.centerH + (this.w / 18),
           this.centerV + (this.w / 6),
+          this.centerH,
+          this.centerV + (this.w / 18),
+          this.centerH + (this.w / 6),
         );
         line(
-          this.centerH + (this.w / 18),
-          this.centerV,
-          this.centerH + (this.w / 6),
+          this.centerV + (this.w / 18),
+          this.centerH,
           this.centerV + (this.w / 6),
+          this.centerH + (this.w / 6),
         );
 
         break;
