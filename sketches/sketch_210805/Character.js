@@ -53,7 +53,7 @@ class Character {
     ears variable
   =========================================== */
   ears = function () {
-    let earType = (new Helpers).rollADie(5);
+    let earType = (new Helpers).rollADie(6);
     switch (earType) {
       case (1):
         /** ----------------------------------------------------
@@ -256,6 +256,67 @@ class Character {
             this.centerV + this.h / 10
           );
         }
+
+        break;
+      case (6):
+        /** ----------------------------------------------------
+        Horns
+        ------------------------------------------------------ */
+        const hornDist = 18;
+        noStroke();
+        fill(this.accentColor.h, this.accentColor.s, this.accentColor.l, 100);
+
+        // https://www.reddit.com/r/processing/comments/22ct50/how_to_make_a_crescent/cgllfw1/?utm_source=reddit&utm_medium=web2x&context=3
+        beginShape();
+        noStroke();
+        vertex(
+          this.w / hornDist,
+          this.h / hornDist
+        );
+        bezierVertex(
+          this.w / hornDist,
+          this.h / hornDist,
+          this.w / hornDist,
+          this.h / hornDist,
+          this.w / hornDist,
+          this.h / hornDist
+        );
+        bezierVertex(
+          this.w / hornDist,
+          this.h / hornDist,
+          this.w / hornDist,
+          this.centerV - (this.h / hornDist),
+          this.centerH,
+          this.centerV - (this.h / hornDist)
+        );
+        bezierVertex(
+          this.w - (this.w / hornDist),
+          this.centerV - (this.h / hornDist),
+          this.w - (this.w / hornDist),
+          this.h / hornDist,
+          this.w - (this.w / hornDist),
+          this.h / hornDist,
+        );
+
+        bezierVertex(
+          this.w - (this.w / hornDist),
+          this.h / hornDist,
+          this.centerH + (this.w / 2.5),
+          this.h,
+          this.centerH,
+          this.h,
+        );
+
+        bezierVertex(
+          this.centerH - (this.w / 2.5),
+          this.h,
+          (this.w / hornDist),
+          (this.w / hornDist),
+          (this.w / hornDist),
+          (this.w / hornDist),
+        );
+
+        endShape();
 
         break;
     }

@@ -1,5 +1,5 @@
 
-let cols = 7;
+let cols = 6;
 let rows = 7;
 let cW = 100;
 let cH = 100;
