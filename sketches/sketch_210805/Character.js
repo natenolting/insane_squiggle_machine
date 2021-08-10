@@ -617,7 +617,7 @@ class Character {
 
       let centerX = random(x1, x2);
       let centerY = random(y1, y2);
-      let rad = random(size / 4, size);
+      let rad = random(size / 8, size);
       if (
         centerX - rad - (this.w / 24) > x1
         && centerX + rad + (this.w / 24) < x2
