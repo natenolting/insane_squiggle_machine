@@ -42,7 +42,11 @@ class Overlap {
     return { x: rx, y: ry, w: w, h: h };
   };
 
-  findOverlap = function () {
+  /**
+    Find Overlap
+    pass in an array of vectors to create a compoind shape
+  */
+  findOverlap = function (hole = []) {
     let containerBB = this.getContainerBoundingBox();
     //console.log(this.container);
     //console.log(containerBB);
@@ -52,7 +56,8 @@ class Overlap {
         let lx = lerp(containerBB.x, containerBB.x + containerBB.w, lerpStartX);
         let inContainer = collidePointPoly(lx, ly, this.container);
         let inShape = collidePointPoly(lx, ly, this.shape);
-        if (inContainer && inShape) {
+        let inHole = collidePointPoly(lx, ly, hole);
+        if (inContainer && inShape && !inHole) {
           this.shapePoints.push(createVector(lx, ly));
         }
 

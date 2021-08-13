@@ -74,8 +74,8 @@ function draw() {
   }
 
   for (var c = 0; c < 4; c++) {
-
-    let shape = new CreateShape(c * cW, cW * (5 + c), c * cH, cH * (2 + c)).ellipse();
+    let shape = new CreateShape(c * cW, cW * (5 + c), c * cH, cH * (5 + c)).rectangle();
+    let hole = new CreateShape(c * cW + cW, cW * (5 + c) - cW, c * cH + cH, cH * (5 + c) - cH).rectangle();
     let shapeCon = new Overlap([], shape).getShapeBoundingBox();
     let shapeOverlap = new Overlap(
       [
@@ -87,7 +87,7 @@ function draw() {
       ],
       shape,
       0.005
-    ).findOverlap();
+    ).findOverlap(hole);
 
     noFill();
     stroke(0, 0, 0, 100);

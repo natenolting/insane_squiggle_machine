@@ -18,6 +18,7 @@ class CreateShape {
     ];
   };
 
+
   ellipse = function () {
     let radius = (this.x2 - this.x1) / 2;
     let n = 4;
