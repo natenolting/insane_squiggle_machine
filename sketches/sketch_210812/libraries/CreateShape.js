@@ -18,13 +18,28 @@ class CreateShape {
     ];
   };
 
+  ellipse = function () {
+    let radius = (this.x2 - this.x1) / 2;
+    let n = 4;
+    let points = Math.pow(10, n);
+    //angle between points
+    let pointAngle = 360 / points;
+    let v = [];
+    for (let angle = 0; angle <= 360; angle = angle + pointAngle) {
+      //convert angle to radians for x and y coordinates
+      let x = cos(radians(angle)) * radius;
+      let y = sin(radians(angle)) * radius;
+
+      v.push(createVector(x + radius + this.x1, y + radius + this.y1));
+    }
+    return v;
+  };
+
   /**
   Create a pill shape
   inspired from https://editor.p5js.org/ebenjmuse/sketches/Sk2uaKN9-
   */
   pill = function () {
-    // fill(0,0,0, 50);
-    // rect(this.x1, this.y1, this.x2 - this.x1, this.y2 - this.y1);
 
     let v = [];
 
@@ -42,23 +57,14 @@ class CreateShape {
 
     if (this.x2 - this.x1 > this.y2 - this.y1) {
       // horizal pill
-      // console.log('horizontal pill');
       radius = (this.y2 - this.y1) / 2;
 
-      // ellipse(this.x1 + radius, this.y1 + radius, 10);
-      // ellipse(this.x2 - radius, this.y2 - radius, 10);
-
       offset = dist(this.x1 + radius, this.y1 + radius, this.x2 - radius, this.y2 - radius);
-      // console.log(offset);
+
       for (let angle = 270; angle > 90; angle = angle - pointAngle) {
         //convert angle to radians for x and y coordinates
         let x = cos(radians(angle)) * radius;
         let y = sin(radians(angle)) * radius;
-
-        // noFill();
-        // stroke(0,0,0,50);
-        //draw a line from each point back to the centre
-        // line(radius, radius, x + radius, y + radius);
 
         v.push(createVector(x + radius + this.x1, y + radius + this.y1));
       }
@@ -72,11 +78,6 @@ class CreateShape {
         let x = cos(radians(angle)) * radius;
         let y = sin(radians(angle)) * radius;
 
-        // noFill();
-        // stroke(0,0,0,50);
-        //draw a line from each point back to the centre
-        // line(radius + offset, radius, x+radius + offset, y+radius);
-
         v.push(createVector(x + radius + this.x1 + offset, y + radius + this.y1));
       }
 
@@ -85,10 +86,6 @@ class CreateShape {
         let x = cos(radians(angle)) * radius;
         let y = sin(radians(angle)) * radius;
 
-        // noFill();
-        // stroke(0,0,0,50);
-        //draw a line from each point back to the centre
-        // line(radius + offset, radius, x+radius + offset, y+radius);
         v.push(createVector(x + radius + this.x1 + offset, y + radius + this.y1));
       }
 
@@ -98,11 +95,7 @@ class CreateShape {
 
     } else {
       // vertical pill
-      // console.log('vertical pill');
       radius = (this.x2 - this.x1) / 2;
-
-      // ellipse(this.x1 + radius, this.y1 + radius, 5);
-      // ellipse(this.x2 - radius, this.y2 - radius, 5);
 
       // Set the offset
       offset = dist(this.x1 + radius, this.y1 + radius, this.x2 - radius, this.y2 - radius);
@@ -110,11 +103,6 @@ class CreateShape {
         //convert angle to radians for x and y coordinates
         let x = cos(radians(angle)) * radius;
         let y = sin(radians(angle)) * radius;
-
-        // noFill();
-        // stroke(0,0,0,50);
-        // //draw a line from each point back to the centre
-        // line(radius + this.x1, radius + this.y1, x + radius + this.x1, y + radius + this.y1);
 
         v.push(createVector(x + radius + this.x1, y + radius + this.y1));
       }
@@ -127,10 +115,6 @@ class CreateShape {
         let x = cos(radians(angle)) * radius;
         let y = sin(radians(angle)) * radius;
 
-        // noFill();
-        // stroke(0,0,0,50);
-        //draw a line from each point back to the centre
-        //line(radius + this.x1, radius + this.y1 + offset, x + radius + this.x1, y + radius + this.y1 + offset);
         v.push(createVector(x + radius + this.x1, y + radius + this.y1 + offset));
       }
 

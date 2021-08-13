@@ -75,7 +75,7 @@ function draw() {
 
   for (var c = 0; c < 4; c++) {
 
-    let shape = new CreateShape(c * cW, cW * (5 + c), c * cH, cH * (2 + c)).pill();
+    let shape = new CreateShape(c * cW, cW * (5 + c), c * cH, cH * (2 + c)).ellipse();
     let shapeCon = new Overlap([], shape).getShapeBoundingBox();
     let shapeOverlap = new Overlap(
       [
