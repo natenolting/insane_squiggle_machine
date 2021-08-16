@@ -56,10 +56,19 @@ class Overlap {
         let lx = lerp(containerBB.x, containerBB.x + containerBB.w, lerpStartX);
         let inContainer = collidePointPoly(lx, ly, this.container);
         let inShape = collidePointPoly(lx, ly, this.shape);
-        let inHole = collidePointPoly(lx, ly, hole);
-        if (inContainer && inShape && !inHole) {
-          this.shapePoints.push(createVector(lx, ly));
+
+        if (hole.length) {
+          let inHole = collidePointPoly(lx, ly, hole);
+          if (inContainer && inShape && !inHole) {
+            this.shapePoints.push(createVector(lx, ly));
+          }
+        } else {
+          if (inContainer && inShape) {
+            this.shapePoints.push(createVector(lx, ly));
+          }
         }
+
+
 
       }
     }
