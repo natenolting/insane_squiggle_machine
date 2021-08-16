@@ -19,7 +19,7 @@ let cells = [];
 function setup() {
   createCanvas(cols * cW, rows * cH);
   colorMode(HSL, 359, 100, 100, 100);
-  background(0,0,100,100);
+  background(0, 0, 100, 100);
 
 }
 
@@ -65,19 +65,31 @@ function populateCells() {
 }
 
 function draw() {
+  let colors = [];
+  let colorA;
+  let colorB;
+  let colorC;
+  hexColors = pallets[Math.floor(_.random(pallets.length - 1))];
+
+  for (var i = 0; i < hexColors.length; i++) {
+    let rgb = colorClass.HEXtoRGB(hexColors[i]);
+    let hsl = colorClass.RGBtoHSL(rgb[0], rgb[1], rgb[2]);
+    colors.push(hsl);
+  }
+
+  newColors = helpers.shuffleArray(colors);
+  colorA = newColors[0];
+  colorB = newColors[1];
+  colorC = newColors[2];
+
   noLoop();
   background(0, 0, 100, 100);
   populateCells();
-  noFill();
-  stroke(0, 0, 0, 10);
-  for (var i = 0; i < cells.length; i++) {
-    rect(cells[i].x, cells[i].y, cells[i].w, cells[i].h);
-  }
 
-  stroke(0, 0, 0, 100);
+  stroke(colorA.h, colorA.s, colorA.l, 100);
   noFill();
 
-  let shape = new CreateShape(0, width, 0, height).ellipse();
+  let shape = new CreateShape(10, width - 10, 10, height - 10).ellipse();
   let shapeFill = [];
 
   let shapeCon = new Overlap([], shape).getShapeBoundingBox();
@@ -90,25 +102,40 @@ function draw() {
         createVector(shapeCon.x - 2, shapeCon.y + shapeCon.h + 2),
     ],
     shape,
-    0.1
-  ).findOverlap([]);
+    0.005
+  ).findOverlap();
 
+  // draw the ellipse
+  beginShape();
+
+  stroke(colorA.h, colorA.s, colorA.l, 100);
+  strokeWeight(10);
+  fill(colorA.h, colorA.s, colorA.l, 100);
+  for (var i = 0; i < shape.length; i++) {
+    vertex(shape[i].x, shape[i].y);
+  }
+
+  endShape(CLOSE);
+
+  fill(colorB.h, colorB.s, colorB.l, 100);
+  noStroke();
   let triangles = [];
-  let maxTries = 1000000;
+  let maxTries = 10000000;
   let tries = 0;
-  let totalTries = 0;
   while (tries < maxTries) {
-    totalTries++;
-    if (totalTries > maxTries * 3) {
-      break;
-    }
+    tries++;
 
     let first = shapeOverlap[floor(random(shapeOverlap.length - 3))];
     let second = shapeOverlap[floor(random(shapeOverlap.length - 3))];
     let third = shapeOverlap[floor(random(shapeOverlap.length - 3))];
+    let collide = false;
+
+    // check that it doesn't collide with the hole
+    // if (collidePolyPoly(hole, [first, second, third, first])) {
+    //   continue;
+    // }
 
     // check it doesn't collide with existing elements
-    let collide = false;
     for (var s = 0; s < triangles.length; s++) {
       if (
         collidePolyPoly(triangles[s], [first, second, third, first])
@@ -136,142 +163,49 @@ function draw() {
     if (semiP < 1 || area < 1 || isNaN(area)) {
       continue;
     }
-
+    //
     // console.log('--------------------------------');
     // console.log(`Try: ${totalTries}`);
     // console.log(`Semi Perim: ${semiP}`);
     // console.log(`Area: ${area}`);
     // console.log('--------------------------------');
 
-    //triangle(first.x, first.y, second.x, second.y, third.x, third.y)
-    strokeWeight(5);
+    // points on the sides to create the curved corners
+    let lStart = 1 / 16;
+    let lEnd = 1 - lStart;
+    let firstA = createVector(lerp(first.x, second.x, lStart), lerp(first.y, second.y, lStart));
+    let firstB = createVector(lerp(first.x, second.x, lEnd), lerp(first.y, second.y, lEnd));
+    let secondA = createVector(lerp(second.x, third.x, lStart), lerp(second.y, third.y, lStart));
+    let secondB = createVector(lerp(second.x, third.x, lEnd), lerp(second.y, third.y, lEnd));
+    let thirdA = createVector(lerp(third.x, first.x, lStart), lerp(third.y, first.y, lStart));
+    let thirdB = createVector(lerp(third.x, first.x, lEnd), lerp(third.y, first.y, lEnd));
 
-    let firstA = createVector(lerp(first.x, second.x, .125), lerp(first.y, second.y, .125));
-    let firstB = createVector(lerp(first.x, second.x, .875), lerp(first.y, second.y, .875));
-    let secondA = createVector(lerp(second.x, third.x, .125), lerp(second.y, third.y, .125));
-    let secondB = createVector(lerp(second.x, third.x, .875), lerp(second.y, third.y, .875));
-    let thirdA = createVector(lerp(third.x, first.x, .125), lerp(third.y, first.y, .125));
-    let thirdB = createVector(lerp(third.x, first.x, .875), lerp(third.y, first.y, .875));
 
-    point(firstA);
-    point(firstB);
-    point(secondA);
-    point(secondB);
-    point(thirdA);
-    point(thirdB);
-
-    strokeWeight(1);
     beginShape();
     vertex(firstA.x, firstA.y);
-    //vertex(firstB.x, firstB.y);
     bezierVertex(second.x, second.y, firstB.x, firstB.y, firstB.x, firstB.y);
     bezierVertex(second.x, second.y, secondA.x, secondA.y, secondA.x, secondA.y);
     vertex(secondA.x, secondA.y);
-    //vertex(secondB.x, secondB.y);
     bezierVertex(third.x, third.y, secondB.x, secondB.y, secondB.x, secondB.y);
     bezierVertex(third.x, third.y, thirdA.x, thirdA.y, thirdA.x, thirdA.y);
     vertex(thirdA.x, thirdA.y);
-    //vertex(thirdB.x, thirdB.y);
     bezierVertex(first.x, first.y, thirdB.x, thirdB.y, thirdB.x, thirdB.y);
     bezierVertex(first.x, first.y, firstA.x, firstA.y, firstA.x, firstA.y);
     vertex(firstA.x, firstA.y);
     endShape(CLOSE);
 
     triangles.push([first, second, third]);
-    tries++;
 
-    //console.log(tries);
   }
 
-  // push();
-  // translate(0, height / 2);
-  // let shape3 = new CreateShape(cW, width - cW, cH * -4.5, cH * 4.5).pill();
-  // let hole3 = [];
-  //
-  // fillShape(shape3, hole3, 0.005, 2);
-  // pop();
-  //
-  // push();
-  // translate(cW * 5, cH * 5);
-  // rotate(radians(-45));
-  // let shape = new CreateShape(cW * -2, cW * 2, cH * -2, cH * 2).ellipse();
-  // let hole = new CreateShape(cW * -.5, cW * .5, cH * -.5, cH * .5).ellipse();
-  // fillShape(shape, hole, 0.004, 2);
-  // pop();
-  //
-  //
-  // push();
-  // translate(width - cW * 5, cH * 5);
-  // rotate(radians(45));
-  // let shape2 = new CreateShape(cW * -2, cW * 2, cH * -2, cH * 2).ellipse();
-  // let hole2 = new CreateShape(cW * -.5, cW * .5, cH * -.5, cH * .5).ellipse();
-  // fillShape(shape2, hole2, 0.004, 2);
-  //
-  // pop();
-  //
-  // push();
-  // translate(cW * 5, cH * 5);
-  // fill(0,0,100,100);
-  // ellipse(0, 0, cW, cH);
-  // pop();
-  //
-  // push();
-  // translate(width - cW * 5, cH * 5);
-  // fill(0,0,100,100);
-  // ellipse(0, 0, cW, cH);
-  // pop();
-  //
-  // push();
-  //   translate(0, height / 2);
-  //   fillShape([],[], 0.004, 2);
-  // pop();
-
-
-
-
-
-
-}
-
-function fillShape(shape, hole = [], density = 0.005, skip = 2, shadow = 'none') {
-  let strokeLow = ((cW + cH) / 2) * density;
-  let strokeHigh = ((cW + cH) / 2) * (density * 10);
-  let shapeCon = new Overlap([], shape).getShapeBoundingBox();
-  let shapeOverlap = new Overlap(
-    [
-        createVector(shapeCon.x - 10, shapeCon.y - 10),
-        createVector(shapeCon.x + shapeCon.w + 10, shapeCon.y - 10),
-        createVector(shapeCon.x + shapeCon.w + 10, shapeCon.y + shapeCon.h + 10),
-        createVector(shapeCon.x, shapeCon.y + shapeCon.h + 10),
-        createVector(shapeCon.x - 10, shapeCon.y + shapeCon.h + 10),
-    ],
-    shape,
-    density
-  ).findOverlap(hole);
-
+  let variance = floor(random(12, 64));
   for (var i = 0; i < shapeOverlap.length; i++) {
-
-    if (i % skip === 0) {
-
-      switch (shadow) {
-        case ('south east'):
-          strokeWeight(
-            map(
-              (shapeOverlap[i].y + shapeOverlap[i].x) / 2,
-              (shapeCon.y + shapeCon.x) / 2,
-              ((shapeCon.y + shapeCon.h) + (shapeCon.x + shapeCon.w)) / 2,
-              strokeLow,
-              strokeHigh
-            )
-          );
-          break;
-
-        default:
-          noStroke();
-          fill(0, 0, 0, 100);
-          ellipse(shapeOverlap[i].x, shapeOverlap[i].y, (strokeLow + strokeHigh) / 2);
-          break;
-      }
+    fill(colorA.h, colorA.s, colorA.l, 100);
+    if (i % variance) {
+      // ellipse(shapeOverlap[i].x, shapeOverlap[i].y, cW / 8, cH / 8);
+      // ellipse(shapeOverlap[i].x, shapeOverlap[i].y, cW / 16, cH / 16);
+      // ellipse(shapeOverlap[i].x, shapeOverlap[i].y, cW / 32, cH / 32);
+      ellipse(shapeOverlap[i].x, shapeOverlap[i].y, cW / 42, cH / 42);
     }
   }
 }
