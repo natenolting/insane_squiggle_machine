@@ -89,7 +89,7 @@ function draw() {
   stroke(colorA.h, colorA.s, colorA.l, 100);
   noFill();
 
-  let shape = new CreateShape(10, width - 10, 10, height - 10).ellipse();
+  let shape = new VectorShape(10, width - 10, 10, height - 10).ellipse();
   let shapeFill = [];
 
   let shapeCon = new Overlap([], shape).getShapeBoundingBox();
