@@ -8,10 +8,20 @@ class Transform {
     scale(1.0, -1.0);
   };
 
-  imgRotatePi = function (img, x, y) {
+  imgRotate = function (img, x, y, r) {
+    push();
+    imageMode(CENTER);
+    rectMode(CENTER);
+    translate(x + img.width / 2, y + img.height / 2);
+    rotate(r);
+    image(img, 0, 0);
+    pop();
+  };
 
+  imgRotatePi = function (img, x, y, mode) {
     push();
     translate(x, y);
+    imageMode(mode === undefined ? CORNER : mode);
     rotate(PI);
     image(img, -img.width, -img.height);
     pop();
