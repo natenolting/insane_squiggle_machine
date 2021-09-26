@@ -1,6 +1,50 @@
 class Helpers {
   constructor() {}
 
+
+  mean = function (array)
+  {
+    var total = 0;
+    for (var i = 0; i < array.length; i++) {
+      total += array[i];
+    }
+
+    return total / array.length;
+  };
+
+  average = function(array)
+  {
+    return this.mean(array);
+  };
+
+  /**
+  * https://jonlabelle.com/snippets/view/javascript/calculate-mean-median-mode-and-range-in-javascript
+  * The "median" is the "middle" value in the list of numbers.
+  *
+  * @param {Array} numbers An array of numbers.
+  * @return {Number} The calculated median value from the specified numbers.
+  */
+  median = function (numbers) {
+    // median of [3, 5, 4, 4, 1, 1, 2, 3] = 3
+    let median = 0;
+    let numsLen = numbers.length;
+    numbers.sort();
+
+    if (
+      numsLen % 2 ===
+      0 // is even
+    ) {
+      // average of two middle numbers
+      median = (numbers[numsLen / 2 - 1] + numbers[numsLen / 2]) / 2;
+    } else {
+      // is odd
+      // middle number only
+      median = numbers[(numsLen - 1) / 2];
+    }
+
+    return median;
+  };
+
   coinFlip = function ()
   {
     return boolean(round(random(1)));

@@ -1,8 +1,8 @@
 // 8x10"
 let canvasWidth = 4500;
 let canvasHeight = 4500;
-let cols = 6;
-let rows = 6;
+let cols = 20;
+let rows = 20;
 let sc = .90;
 let cW = canvasWidth / cols;
 let cH = canvasHeight / rows;
