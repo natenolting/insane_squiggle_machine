@@ -240,7 +240,7 @@ class Shapes {
       if (thisPixels[i].firstIn === true || thisPixels[i].lastOut === true) {
         let p1 = createVector(thisPixels[i].x, thisPixels[i].y);
         let p2 = createVector(p1.x + shadowX, p1.y + shadowY);
-        strokeWeight(1);
+        strokeWeight(2);
         stroke(0, 0, 0, 255);
         line(p1.x, p1.y, p2.x, p2.y);
       }
