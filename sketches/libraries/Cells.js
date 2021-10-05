@@ -1,3 +1,16 @@
+class Cell {
+  constructor(row = 0, col = 0, x = 0, y = 0, w = 25, h = 25, used = false) {
+    this.row = row;
+    this.col = col;
+    this.x = x;
+    this.y = y;
+    this.w = w;
+    this.h = h;
+    this.used = used;
+
+  }
+}
+
 class Cells {
 
   constructor(cols = 10, rows = 10, cW = 25, cH = 25) {
@@ -22,15 +35,15 @@ class Cells {
 
     for (var c = 0; c < this.cols; c++) {
       for (var r = 0; r < this.rows; r++) {
-        let newCell = {
-          row: r,
-          col: c,
-          x: c * this.cW,
-          y: r * this.cH,
-          w: this.cW,
-          h: this.cH,
-          used: false,
-        };
+        let newCell = new Cell(
+          r,
+          c,
+          c * this.cW,
+          r * this.cH,
+          this.cW,
+          this.cH,
+          false,
+        );
 
         // extra large multiple
         extraLargeHit = Math.ceil(Math.random() * extraLargeChance);
@@ -43,15 +56,15 @@ class Cells {
           && newCell.x + newCell.w + (this.cW * eM) < this.width
           && newCell.y + newCell.h + (this.cH * eM) < this.height
         ) {
-          let extraLargeCell = {
-            row: r,
-            col: c,
-            x: c * this.cW,
-            y: r * this.cH,
-            w: newCell.w + (this.cW * eM),
-            h: newCell.h + (this.cH * eM),
-            used: false,
-          };
+          let extraLargeCell = new Cell(
+            r,
+            c,
+            c * this.cW,
+            r * this.cH,
+            newCell.w + (this.cW * eM),
+            newCell.h + (this.cH * eM),
+            false,
+          );
           newExtraLargeCells.push(extraLargeCell);
         }
       }
