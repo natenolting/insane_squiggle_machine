@@ -1,11 +1,14 @@
 class Cell {
-  constructor(row = 0, col = 0, x = 0, y = 0, w = 25, h = 25, used = false) {
+  constructor(row = 0, col = 0, x = 0, y = 0, w = 25, h = 25, used = false, cellIndex = 0) {
+    this.index = cellIndex;
     this.row = row;
     this.col = col;
     this.x = x;
     this.y = y;
     this.w = w;
     this.h = h;
+    this.cX = this.x + this.w / 2;
+    this.cY = this.y + this.h / 2;
     this.used = used;
 
   }
@@ -32,7 +35,8 @@ class Cells {
     let newCells = [];
     let newExtraLargeCells = [];
     let extraLargeHit;
-
+    let cellIndex = 0;
+    let largeCellIndex = 0;
     for (var c = 0; c < this.cols; c++) {
       for (var r = 0; r < this.rows; r++) {
         let newCell = new Cell(
@@ -43,7 +47,9 @@ class Cells {
           this.cW,
           this.cH,
           false,
+          cellIndex
         );
+        cellIndex++;
 
         // extra large multiple
         extraLargeHit = Math.ceil(Math.random() * extraLargeChance);
@@ -64,7 +70,9 @@ class Cells {
             newCell.w + (this.cW * eM),
             newCell.h + (this.cH * eM),
             false,
+            largeCellIndex
           );
+          largeCellIndex++;
           newExtraLargeCells.push(extraLargeCell);
         }
       }
