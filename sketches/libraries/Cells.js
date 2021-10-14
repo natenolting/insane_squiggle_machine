@@ -72,6 +72,13 @@ class Cells {
             false,
             largeCellIndex
           );
+
+          extraLargeCell.colStart = extraLargeCell.col;
+          extraLargeCell.colEnd = extraLargeCell.col + (extraLargeCell.w / this.cW) - 1;
+
+          extraLargeCell.rowStart = extraLargeCell.row;
+          extraLargeCell.rowEnd = extraLargeCell.row + (extraLargeCell.h / this.cH) - 1;
+
           largeCellIndex++;
           newExtraLargeCells.push(extraLargeCell);
         }
@@ -101,6 +108,18 @@ class Cells {
 
     // filter out overlapping
     _.remove(newCells, function (o) { return o.used; });
+
+
+    // find adjacent cells to large Cells
+    for (var i = 0; i < newExtraLargeCells.length; i++) {
+      newExtraLargeCells[i].adjacentCells = _.filter(newCells, function (e) {
+            return e.col >= newExtraLargeCells[i].colStart - 1
+            && e.col <= newExtraLargeCells[i].colEnd + 1
+            && e.row >= newExtraLargeCells[i].rowStart - 1
+            && e.row <= newExtraLargeCells[i].rowEnd + 1;
+          });
+
+    }
 
     return [newCells, newExtraLargeCells];
   };
