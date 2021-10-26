@@ -297,6 +297,11 @@ function saveFileName() {
 }
 
 function keyPressed() {
+
+  if (key === "r") {
+    window.location.reload(false);
+  }
+
   if (key === "Enter") {
     redraw();
   }
