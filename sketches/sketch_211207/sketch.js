@@ -1,5 +1,5 @@
-let canvasWidth = 2400;
-let canvasHeight = 2400;
+let canvasWidth = 800;
+let canvasHeight = 800;
 let cells;
 let cellsWidth;
 let cellsHeight;
@@ -12,7 +12,7 @@ let rows;
 
 // lower number = tighter design
 let cellVariance = 100;
-let strokeVariance = .15;
+let strokeVariance = .25;
 
 function setupCells(cv) {
   cols = ceil(canvasWidth / cv);
@@ -124,6 +124,51 @@ function draw() {
       ellipse(c.cX, c.cY, c.w / 3, c.h / 3);
     }
   }
+  /// ---------------------------------------------------------
+  loadPixels();
+
+  let pxls = [];
+  let pixlX = 0;
+  let pixlY = 0;
+  for (let i = 0; i < pixels.length; i += 4) {
+    if (pixlX === canvasWidth) {
+      pixlX = 0;
+      pixlY++;
+    }
+
+    let hsl = (new Colors).RGBtoHSL(pixels[i], pixels[i + 1], pixels[i + 2]);
+    pxls.push({
+      x: pixlX,
+      y: pixlY,
+      h: hsl.h,
+      s: hsl.s,
+      l: hsl.l,
+      alpha: map(pixels[i + 3], 0, 255, 0, 100),
+    });
+
+    pixlX++;
+
+  }
+  fill(0,0,100,100);
+  rect(0,0,canvasWidth,canvasHeight);
+  for (var i = 0; i < pxls.length; i++) {
+    let pix = pxls[i];
+    if (pix.l !== 100) {
+
+      fill(
+        map(359 / 2, 1, 359, 0, pix.y),
+        100,
+        map(pix.l, 0, 50, 50, 100),
+        100
+      );
+
+      noStroke();
+      rect(pix.x, pix.y, 1, 1);
+    }
+  }
+
+  /// ---------------------------------------------------------
+
 }
 
 function saveFileName() {
