@@ -50,6 +50,11 @@ class Helpers {
     return boolean(round(random(1)));
   };
 
+  flipACoin = function ()
+  {
+    return this.coinFlip();
+  };
+
   rollADie = function (sides=6) {
     return ceil(random(sides));
   };
