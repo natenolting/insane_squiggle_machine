@@ -1,22 +1,25 @@
-let canvasWidth = 5000;
-let canvasHeight = 5000;
-let margin = 100;
-let iterations = 500;
-let sizeVariation = 10;
-let lengthVariation = 10;
+// --------------------------------------------------------------------------------------------------
+// Settings
+let canvasWidth = 1920;
+let canvasHeight = 1080;
+let margin = 25;
+let iterations = 250;
+let sizeVariation = 20;
+let lengthVariation = 20;
+let cubesideWidth = 12;
+let pixelD = 4;
+
+// --------------------------------------------------------------------------------------------------
 
 let cubeSideHeightMultiple = 0.577396542692509;
-let cubesideWidth = 12.2176;
 let cubesideHeight = cubesideWidth * cubeSideHeightMultiple;
+let data;
+let pallets;
+let cols = Math.floor(canvasWidth / cubesideWidth);
+let rows = Math.floor(canvasHeight / cubesideHeight);
 
-const pallets = [
-["2b2d42","8d99ae","edf2f4","ef233c","d90429"],
-["233d4d","fe7f2d","fcca46","a1c181","619b8a"],
-["ff6b35","f7c59f","efefd0","004e89","1a659e"],
-["ffffff","84dcc6","a5ffd6","ffa69e","ff686b"],
-
-
-];
+let cells = _.sortBy(new Cells(cols, rows, cubesideWidth, cubesideHeight).populateCells(false)[0], ['row', 'col']);
+//console.log(cols, rows, cells);
 
 
 let saveId = new Helpers().makeid(10);
@@ -27,11 +30,27 @@ const colors = new Colors();
 let colorList;
 let hexColors;
 
+function vectorsAreInsideBounds(iso) {
+    return iso.a.x >= margin && iso.a.y >= margin && iso.a.x <= canvasWidth - margin && iso.a.y <= canvasHeight - margin &&
+           iso.b.x >= margin && iso.b.y >= margin && iso.b.x <= canvasWidth - margin && iso.b.y <= canvasHeight - margin &&
+           iso.c.x >= margin && iso.c.y >= margin && iso.c.x <= canvasWidth - margin && iso.c.y <= canvasHeight - margin &&
+           iso.d.x >= margin && iso.d.y >= margin && iso.d.x <= canvasWidth - margin && iso.d.y <= canvasHeight - margin &&
+           iso.e.x >= margin && iso.e.y >= margin && iso.e.x <= canvasWidth - margin && iso.e.y <= canvasHeight - margin &&
+           iso.f.x >= margin && iso.f.y >= margin && iso.f.x <= canvasWidth - margin && iso.f.y <= canvasHeight - margin &&
+           iso.g.x >= margin && iso.g.y >= margin && iso.g.x <= canvasWidth - margin && iso.g.y <= canvasHeight - margin
+}
+
+
+function preload() {
+  data = loadJSON("../../data/palettes.json");
+
+}
 
 function setup() {
   createCanvas(canvasWidth, canvasHeight);
   colorMode(HSL, 359, 100, 100, 100);
-  pixelDensity(1);
+  pixelDensity(pixelD);
+  pallets = data.palettes;
 }
 
 
@@ -54,11 +73,13 @@ function draw() {
   let roll = new Helpers().rollADie(7);
   let size = new Helpers().rollADie(sizeVariation);
   let multiple = new Helpers().rollADie(lengthVariation);
-  let iso = new Isometric(canvasWidth/2, canvasHeight/2, cubesideWidth, cubesideHeight,size);
+  let startingPoint = random(cells);
+  let iso = new Isometric(startingPoint.cX, startingPoint.cY, cubesideWidth, cubesideHeight,size);
   let coord = iso.pickDirection(roll, multiple);
   let thisColor = random(pallet);
-
-  coord.build(thisColor.h, thisColor.s, thisColor.l);
+  if (vectorsAreInsideBounds(coord)) {
+    coord.build(thisColor.h, thisColor.s, thisColor.l);
+  }
   let oldCoord = coord;
   for (var i = 0; i < iterations; i++) {
     let origin = { x: oldCoord.a.x, y: oldCoord.a.y };
@@ -75,18 +96,12 @@ function draw() {
     let newCoord = newIso.pickDirection(roll, multiple);
 
     // if we hit a wall reset the starting point/size
-    if (
-      newCoord.d.x < margin || newCoord.d.y < margin ||
-      newCoord.c.x < 0 || newCoord.c.y < 0 ||
-      newCoord.b.x < 0 || newCoord.b.y < 0 ||
-      newCoord.e.x > canvasWidth - margin || newCoord.e.y > canvasHeight - margin ||
-      newCoord.f.x > canvasWidth - margin || newCoord.f.y > canvasHeight - margin ||
-      newCoord.a.x > canvasWidth - margin || newCoord.a.y > canvasHeight - margin
-    ) {
+    if (!vectorsAreInsideBounds(newCoord)) {
       size = new Helpers().rollADie(sizeVariation);
+      startingPoint = random(cells);
       oldCoord = new Isometric(
-        floor(random(margin, canvasWidth - margin)),
-        floor(random(margin, canvasHeight - margin)),
+        startingPoint.cX,
+        startingPoint.cY,
         cubesideWidth,
         cubesideHeight,
         size
@@ -102,6 +117,8 @@ function draw() {
 
 
 }
+
+
 
 class Isometric {
   constructor(startX, startY, sideW, sideH, multiplier) {
@@ -203,9 +220,8 @@ class Isometric {
 
   build = function (h = 0, s = 0, l = 50) {
 
-    strokeWeight(.5);
     // left face
-    stroke(h, s, l / 2, 100);
+    noStroke();
     fill(h, s, l / 2, 100);
     beginShape();
     vertex(this.a.x, this.a.y);
@@ -216,7 +232,6 @@ class Isometric {
     endShape();
 
     // right face
-    stroke(h, s, l / 4, 100);
     fill(h, s, l / 4, 100);
     beginShape();
     vertex(this.a.x, this.a.y);
@@ -227,7 +242,6 @@ class Isometric {
     endShape();
 
     // top
-    stroke(h, s, l, 100);
     fill(h, s, l, 100);
     beginShape();
     vertex(this.c.x, this.c.y);
@@ -236,6 +250,10 @@ class Isometric {
     vertex(this.g.x, this.g.y);
     vertex(this.c.x, this.c.y);
     endShape();
+
+
+
+
   };
 
 }

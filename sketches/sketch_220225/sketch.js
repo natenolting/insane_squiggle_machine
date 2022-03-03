@@ -142,6 +142,10 @@ function draw() {
   }
 }
 
+function vectorsInsideBounds() {
+
+}
+
 class Isometric {
   constructor(startX, startY, sideW, sideH, multiplier) {
     this.startX = startX;
