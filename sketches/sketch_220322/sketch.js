@@ -1,15 +1,17 @@
+const helper = new Helpers();
 // --------------------------------------------------------------------------------------------------
 // Settings
 // 2750 x 4250 = 11x17" @ 250 ppi
-let canvasWidth = 3000;
-let canvasHeight = 3000;
-let margin = 100;
-let iterations = 500;
-let sizeVariation = new Helpers().range(1,50);
-let lengthVariation = new Helpers().range(5,10);
+let margin = 25;
+let canvasWidth = window.innerWidth - margin;
+let canvasHeight = window.innerHeight - margin;
+let iterations = 1000;
+let sizeVariation = helper.range(1,15);
+let lengthVariation = 20;
 let cubesideWidth = 12;
-let rollBetween = new Helpers().range(1,2);
+let rollBetween = helper.range(1,7);
 let pixelD = 4;
+let opacity = 100;
 
 // --------------------------------------------------------------------------------------------------
 
@@ -22,9 +24,12 @@ let cols = Math.floor(canvasWidth / cubesideWidth);
 let rows = Math.floor(canvasHeight / cubesideHeight);
 
 let cells = _.sortBy(new Cells(cols, rows, cubesideWidth, cubesideHeight).populateCells(false)[0], ['row', 'col']);
+//cells = _.filter(cells, function(o) { return o.cX >= (canvasWidth / 2) - (cubesideWidth / 2) && o.cX <= (canvasWidth / 2) + (cubesideWidth / 2); })
+//console.log(cells);
 
-let saveId = new Helpers().makeid(10);
+let saveId = helper.makeid(10);
 let saveCount = 0;
+
 
 const colors = new Colors();
 let colorList;
@@ -89,18 +94,18 @@ function draw() {
   if (Array.isArray(rollBetween)) {
     roll = random(rollBetween);
   } else {
-    roll = new Helpers().rollADie(7);
+    roll = helper.rollADie(7);
   }
 
   if (Array.isArray(sizeVariation)) {
     sizeOfShape = random(sizeVariation);
   } else {
-    sizeOfShape = new Helpers().rollADie(sizeVariation);
+    sizeOfShape = helper.rollADie(sizeVariation);
   }
   if (Array.isArray(lengthVariation)) {
     multiple = random(lengthVariation);
   } else {
-    multiple = new Helpers().rollADie(lengthVariation);
+    multiple = helper.rollADie(lengthVariation);
   }
 
   let startingPoint = random(cells);
@@ -108,14 +113,14 @@ function draw() {
   let coord = iso.pickDirection(roll, multiple);
   let thisColor = random(pallet);
   if (vectorsAreInsideBounds(coord)) {
-    coord.build(thisColor.h, thisColor.s, thisColor.l);
+    coord.build(thisColor.h, thisColor.s, thisColor.l, opacity);
   }
   let oldCoord = coord;
   for (var i = 0; i < iterations; i++) {
     if (Array.isArray(rollBetween)) {
       roll = random(rollBetween);
     } else {
-      roll = new Helpers().rollADie(7);
+      roll = helper.rollADie(7);
     }
     // starting point "g" seems to give the best result
     startingPoint = { x: oldCoord.g.x, y: oldCoord.g.y };
@@ -128,7 +133,7 @@ function draw() {
       sizeOfShape
     );
 
-    multiple = new Helpers().rollADie(lengthVariation);
+    multiple = helper.rollADie(lengthVariation);
     let newCoord = newIso.pickDirection(roll, multiple);
 
     // if we hit a wall reset the starting point/size
@@ -136,11 +141,10 @@ function draw() {
       if (Array.isArray(sizeVariation)) {
         sizeOfShape = random(sizeVariation);
       } else {
-        sizeOfShape = new Helpers().rollADie(sizeVariation);
+        sizeOfShape = helper.rollADie(sizeVariation);
       }
 
       startingPoint = random(cells);
-      
       oldCoord = new Isometric(
         startingPoint.cX,
         startingPoint.cY,
@@ -153,7 +157,7 @@ function draw() {
       continue;
     }
 
-    newCoord.build(thisColor.h, thisColor.s, thisColor.l);
+    newCoord.build(thisColor.h, thisColor.s, thisColor.l, opacity);
     oldCoord = newCoord;
   }
 
@@ -297,19 +301,19 @@ class Isometric {
     endShape();
   }
 
-  build = function (h = 0, s = 0, l = 50) {
+  build = function (h = 0, s = 0, l = 50, o = 100) {
 
     // left face
     noStroke();
-    fill(h, s, l * .75, 100);
+    fill(h, s, l * .75, o);
     this.buildLeftFace();
 
     // right face
-    fill(h, s, l * .55, 100);
+    fill(h, s, l * .55, o);
     this.buildRightFace();
 
     // top
-    fill(h, s, l, 100);
+    fill(h, s, l, o);
     this.buildTopFace()
 
   };
