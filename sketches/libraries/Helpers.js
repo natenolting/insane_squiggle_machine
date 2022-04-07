@@ -90,7 +90,11 @@ class Helpers {
   };
 
   range = function (start, end) {
-  return Array(end - start + 1).fill().map((_, idx) => start + idx)
-}
+    return Array(end - start + 1).fill().map((_, idx) => start + idx)
+  }
+
+  isEven = function(number) {
+    return number % 2 == 0
+  }
 
 }
