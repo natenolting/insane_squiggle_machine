@@ -4,7 +4,9 @@ const colors = new Colors();
 const margin = 50;
 const cols = 4;
 const rows = 3;
-const monocrome = true;
+const monoChrome = false;
+const texture = false;
+const bands = false;
 const cW = 200;
 
 const extraRows = Math.floor(rows / 3);
@@ -96,21 +98,21 @@ function draw() {
             }
             if (cube instanceof Isometric) {
                 noStroke();
-                if (!monocrome) {
+                if (!monoChrome) {
                     thisColor = random(pallet);
                 }
                 if (helper.flipACoin()) {
                     fill(thisColor.h, thisColor.s, thisColor.l * lDark, 100);
                     cube.buildBottomFace();
                 }
-                if (helper.flipACoin()) {
+                if (helper.flipACoin() && texture) {
                     // bottom side texture
                     sideNoise(cube.g, cube.b, cube.f, cube.a, {h: thisColor.h, s: thisColor.s, l: thisColor.l * lDark});
                     sideNoise(cube.b, cube.g, cube.a, cube.f, {h: thisColor.h, s: thisColor.s, l: thisColor.l * lDark});
                     sideNoise(cube.f, cube.g, cube.a, cube.b, {h: thisColor.h, s: thisColor.s, l: thisColor.l * lDark});
                     sideNoise(cube.g, cube.f, cube.b, cube.a, {h: thisColor.h, s: thisColor.s, l: thisColor.l * lDark});
                 }
-                if (helper.flipACoin()) {
+                if (helper.flipACoin() && bands) {
                     // bottom bands
                     sideBands(cube.a, cube.b, cube.f, cube.g, {h: thisColor.h, s: thisColor.s, l: thisColor.l * lDark});
                 }
@@ -118,14 +120,14 @@ function draw() {
                     fill(thisColor.h, thisColor.s, thisColor.l * lLow, 100);
                     cube.buildRightFace();
                 }
-                if (helper.flipACoin()) {
+                if (helper.flipACoin() && texture) {
                     // right side texture
                     sideNoise(cube.g, cube.a, cube.e, cube.f, {h: thisColor.h, s: thisColor.s, l: thisColor.l * lLow});
                     sideNoise(cube.a, cube.g, cube.f, cube.e, {h: thisColor.h, s: thisColor.s, l: thisColor.l * lLow});
                     sideNoise(cube.g, cube.e, cube.a, cube.f, {h: thisColor.h, s: thisColor.s, l: thisColor.l * lLow});
                     sideNoise(cube.e, cube.g, cube.f, cube.a, {h: thisColor.h, s: thisColor.s, l: thisColor.l * lLow});
                 }
-                if (helper.flipACoin()) {
+                if (helper.flipACoin() && bands) {
                     // right bands
                     sideBands(cube.g, cube.e, cube.a, cube.f, {h: thisColor.h, s: thisColor.s, l: thisColor.l * lLow});
                 }
@@ -133,14 +135,14 @@ function draw() {
                     fill(thisColor.h, thisColor.s, thisColor.l * lHigh, 100);
                     cube.buildLeftFace();
                 }
-                if (helper.flipACoin()) {
+                if (helper.flipACoin() && texture) {
                     // left side texture
                     sideNoise(cube.c, cube.b, cube.g, cube.a, {h: thisColor.h, s: thisColor.s, l: thisColor.l * lHigh});
                     sideNoise(cube.b, cube.c, cube.a, cube.g, {h: thisColor.h, s: thisColor.s, l: thisColor.l * lHigh});
                     sideNoise(cube.c, cube.g, cube.b, cube.a, {h: thisColor.h, s: thisColor.s, l: thisColor.l * lHigh});
                     sideNoise(cube.g, cube.c, cube.a, cube.b, {h: thisColor.h, s: thisColor.s, l: thisColor.l * lHigh});
                 }
-                if (helper.flipACoin()) {
+                if (helper.flipACoin() && bands) {
                     // left bands
                     sideBands(cube.c, cube.g, cube.b, cube.a, {h: thisColor.h, s: thisColor.s, l: thisColor.l * lHigh});
                 }
@@ -148,7 +150,7 @@ function draw() {
                     fill(thisColor.h, thisColor.s, thisColor.l, 100);
                     cube.buildTopFace();
                 }
-                if (helper.flipACoin()) {
+                if (helper.flipACoin() && texture) {
                     // top texture
                     sideNoise(cube.d, cube.c, cube.e, cube.g, {h: thisColor.h, s: thisColor.s, l: thisColor.l});
                     sideNoise(cube.c, cube.d, cube.g, cube.e, {h: thisColor.h, s: thisColor.s, l: thisColor.l});
@@ -156,14 +158,10 @@ function draw() {
                     sideNoise(cube.g, cube.c, cube.e, cube.d, {h: thisColor.h, s: thisColor.s, l: thisColor.l});
                     sideNoise(cube.c, cube.g, cube.d, cube.e, {h: thisColor.h, s: thisColor.s, l: thisColor.l});
                 }
-                if (helper.flipACoin()) {
-
+                if (helper.flipACoin() && bands) {
                     // top bands
-
                     sideBands(cube.d, cube.c, cube.e, cube.g, {h: thisColor.h, s: thisColor.s, l: thisColor.l});
-
                 }
-
             }
         }
 
