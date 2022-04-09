@@ -97,4 +97,14 @@ class Helpers {
     return number % 2 == 0
   }
 
+  // Check if point is un polygon
+  // https://editor.p5js.org/makio135/sketches/O9xQNN6Q
+  pointInPoly = function(verts, pt) {
+    let c = false;
+    for (let i = 0, j = verts.length - 1; i < verts.length; j = i++) {
+      if (((verts[i].y > pt.y) != (verts[j].y > pt.y)) && (pt.x < (verts[j].x - verts[i].x) * (pt.y - verts[i].y) / (verts[j].y - verts[i].y) + verts[i].x)) c = !c;
+    }
+    return c;
+  }
+
 }
