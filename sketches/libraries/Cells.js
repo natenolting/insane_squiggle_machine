@@ -10,6 +10,7 @@ class Cell {
     this.cX = this.x + this.w / 2;
     this.cY = this.y + this.h / 2;
     this.used = used;
+    this.fill;
 
   }
 }
