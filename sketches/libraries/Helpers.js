@@ -70,6 +70,11 @@ class Helpers {
     return result;
   };
 
+  between = function(low, high) {
+    console.log(noise(high , low));
+    return low + ((high - low) * noise(low, high));
+  }
+
   //https://stackoverflow.com/a/2450976
   shuffleArray = function (array) {
     var currentIndex = array.length,  randomIndex;

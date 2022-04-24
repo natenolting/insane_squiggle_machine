@@ -2,11 +2,11 @@ const helper = new Helpers();
 const color = new Colors();
 
 
-const imgMultiplier = 35;
+const imgMultiplier = 10;
 const factor = .95;
 const margin = 25;
 const mediumColor = .75;
-const darkColor = .5;
+const darkColor = .55;
 let img;
 let sImg;
 let sIW, sIH;
@@ -58,7 +58,7 @@ function draw() {
     rect(0, 0, canvasWidth, canvasHeight);
     //image(sImg,0,0,sImg.width,sImg.width)
     sImg.loadPixels();
-
+    let cellIndex = 0;
     for (let x = 0; x < sImg.width; x++) {
         for (let y = 0; y < sImg.height; y++) {
             let index = (x + y * sImg.width) * 4;
@@ -74,10 +74,12 @@ function draw() {
                 y * imgMultiplier,
                 imgMultiplier,
                 imgMultiplier,
-                index
+                false,
+                cellIndex
             );
             c.fill = [r, g, b];
             cells.push(c);
+            cellIndex++;
         }
     }
     // do background to fill in any dead spots
@@ -97,7 +99,7 @@ function draw() {
             d: createVector(x1, y2),
         }
 
-        if (backgroundInsideBounds(bgVectors, margin * 4)) {
+        if (backgroundInsideBounds(bgVectors, margin * 1.375)) {
             beginShape();
             vertex(bgVectors.a.x, bgVectors.a.y);
             vertex(bgVectors.b.x, bgVectors.b.y);
@@ -115,17 +117,22 @@ function draw() {
         fill(c.fill[0], c.fill[1], c.fill[2], 1);
         noStroke();
 
-
         let iso = new Isometric(
-            random(x1, x2),
+            x1 + ((x2 - x1) * noise(x1, y1)),
             y2,
             (x2 - x1) / 2,
             ((x2 - x1) / 2) * (new Isometric()).heightMultiple,
-            random(1, 2)
+            1 + noise(x1, y1)
         );
-
-        iso.pickDirection(random([1, 6, 7]), random(1.5));
-        if (isoIsInsideBounds(iso, margin)) {
+        let dirPercent = noise(x1 * c.index, y2 * c.index);
+        let direction = 1;
+        if (dirPercent < .45) {
+          direction = 6;
+        } else if (dirPercent > .65) {
+          direction = 7;
+        }
+        iso.pickDirection(direction, 2 * noise(x2, y2));
+        if (isoIsInsideBounds(iso, margin * .75)) {
           used++;
             //do faces
             fill(c.fill[0], c.fill[1], c.fill[2], 1);
