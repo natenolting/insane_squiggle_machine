@@ -1,0 +1,17 @@
+{
+  "settings": {
+    "pixelDensity": 2,
+    "columns": 4,
+    "rows": 4,
+    "cellWidth": 400,
+    "cellHeight": 400,
+    "colorMode": "HSL",
+    "pixelFillRange": [2, 4, 8],
+    "cellFillRange": [4, 8, 12],
+    "largeCells": {
+      "build": true,
+      "chance": 2,
+      "multiplier": 4
+    }
+  }
+}
