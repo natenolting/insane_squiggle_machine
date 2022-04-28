@@ -1,0 +1,11 @@
+{
+  "settings": {
+    "pixelDensity": 2,
+    "columns": 200,
+    "rows": 200,
+    "margin": 5,
+    "cellWidth": 10,
+    "cellHeight": 10,
+    "baseOpacity": 0.0005
+  }
+}

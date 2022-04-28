@@ -1,0 +1,18 @@
+{
+  "settings": {
+    "pixelDensity": 2,
+    "columns": 20,
+    "rows": 20,
+    "cellWidth": 100,
+    "cellHeight": 100,
+    "colorOpacity": 25,
+    "layers": 25,
+    "pixelFillRange": [2, 4],
+    "cellFillRange": [4, 8, 15, 16, 23, 42],
+    "largeCells": {
+      "build": true,
+      "chance": 2,
+      "multiplier": 3
+    }
+  }
+}
