@@ -39,10 +39,10 @@ let thisColor;
 let settingsData;
 let settings;
 
-let cyan =    '00AEEF';
+let cyan = '00AEEF';
 let magenta = 'EC008C';
-let yellow =  'FFF200';
-let black =   '000004';
+let yellow = 'FFF200';
+let black = '000004';
 let lOpacity;
 let loops;
 
@@ -116,103 +116,136 @@ function draw() {
 
     let rowOffset = cH / 4;
     for (var l = 0; l < loops; l++) {
-    for (let r = 0; r < rows + extraRows; r++) {
-        let subCells = _.filter(cells, function (o) {
-            return o.row === r;
-        });
-        for (const cCell of subCells) {
-            let cube;
+        for (let r = 0; r < rows + extraRows; r++) {
+            let subCells = _.filter(cells, function (o) {
+                return o.row === r;
+            });
+            for (const cCell of subCells) {
+                let cube;
 
-            if (helper.isEven(cCell.row)) {
-                cube = new Isometric(
-                    cCell.cX,
-                    (cCell.y + cCell.h) - (rowOffset * r),
-                    cCell.w / 2,
-                    cCell.w / 2 * cubeSideHeightMultiple, 1
-                );
+                if (helper.isEven(cCell.row)) {
+                    cube = new Isometric(
+                        cCell.cX,
+                        (cCell.y + cCell.h) - (rowOffset * r),
+                        cCell.w / 2,
+                        cCell.w / 2 * cubeSideHeightMultiple, 1
+                    );
 
-            } else if (!helper.isEven(cCell.row) && cCell.col < cols - 1) {
-                cube = new Isometric(
-                    cCell.cX + cCell.w / 2,
-                    (cCell.y + cCell.h) - (rowOffset * r),
-                    cCell.w / 2,
-                    cCell.w / 2 * cubeSideHeightMultiple, 1
-                );
+                } else if (!helper.isEven(cCell.row) && cCell.col < cols - 1) {
+                    cube = new Isometric(
+                        cCell.cX + cCell.w / 2,
+                        (cCell.y + cCell.h) - (rowOffset * r),
+                        cCell.w / 2,
+                        cCell.w / 2 * cubeSideHeightMultiple, 1
+                    );
 
+                }
+                if (cube instanceof Isometric) {
+                    noStroke();
+                    if (!monoChrome) {
+                        thisColor = random(pallet);
+                    }
+
+                    if (l === 0 && transparent) {
+                      fill(0,0,100,100);
+                      cube.buildBottomFace();
+                      cube.buildTopFace();
+                      cube.buildLeftFace();
+                      cube.buildRightFace();
+                    }
+
+                    //--------------------------------------------------
+                    // Bottom Face
+                    // -------------------------------------------------
+                    if (helper.flipACoin()) {
+                        fill(thisColor.h, thisColor.s, thisColor.l * lDark, 100 * lOpacity);
+                        cube.buildBottomFace();
+                    }
+                    if (helper.flipACoin() && texture) {
+                        // bottom side texture
+                        sideNoise(cube.g, cube.b, cube.f, cube.a, {
+                            h: thisColor.h,
+                            s: thisColor.s,
+                            l: thisColor.l * lDark
+                        });
+                    }
+                    if (helper.flipACoin() && bands) {
+                        // bottom bands
+                        sideBands(cube.a, cube.b, cube.f, cube.g, {
+                            h: thisColor.h,
+                            s: thisColor.s,
+                            l: thisColor.l * lDark
+                        });
+                    }
+
+                    //--------------------------------------------------
+                    // Right Face
+                    // -------------------------------------------------
+                    if (helper.flipACoin()) {
+                        fill(thisColor.h, thisColor.s, thisColor.l * lLow, 100 * lOpacity);
+                        cube.buildRightFace();
+                    }
+                    if (helper.flipACoin() && texture) {
+                        // right side texture
+                        sideNoise(cube.g, cube.a, cube.e, cube.f, {
+                            h: thisColor.h,
+                            s: thisColor.s,
+                            l: thisColor.l * lLow
+                        });
+                    }
+                    if (helper.flipACoin() && bands) {
+                        // right bands
+                        sideBands(cube.g, cube.e, cube.a, cube.f, {
+                            h: thisColor.h,
+                            s: thisColor.s,
+                            l: thisColor.l * lLow
+                        });
+                    }
+
+                    //--------------------------------------------------
+                    // Left Face
+                    // -------------------------------------------------
+                    if (helper.flipACoin()) {
+                        fill(thisColor.h, thisColor.s, thisColor.l * lHigh, 100 * lOpacity);
+                        cube.buildLeftFace();
+                    }
+                    if (helper.flipACoin() && texture) {
+                        // left side texture
+                        sideNoise(cube.c, cube.b, cube.g, cube.a, {
+                            h: thisColor.h,
+                            s: thisColor.s,
+                            l: thisColor.l * lHigh
+                        });
+                    }
+                    if (helper.flipACoin() && bands) {
+                        // left bands
+                        sideBands(cube.c, cube.g, cube.b, cube.a, {
+                            h: thisColor.h,
+                            s: thisColor.s,
+                            l: thisColor.l * lHigh
+                        });
+                    }
+
+                    //--------------------------------------------------
+                    // Top Face
+                    // -------------------------------------------------
+                    if (helper.flipACoin()) {
+                        fill(thisColor.h, thisColor.s, thisColor.l, 100 * lOpacity);
+                        cube.buildTopFace();
+                    }
+                    if (helper.flipACoin() && texture) {
+                        // top texture
+                        sideNoise(cube.d, cube.c, cube.e, cube.g, {h: thisColor.h, s: thisColor.s, l: thisColor.l});
+                    }
+                    if (helper.flipACoin() && bands) {
+                        // top bands
+                        sideBands(cube.d, cube.c, cube.e, cube.g, {h: thisColor.h, s: thisColor.s, l: thisColor.l});
+                    }
+                }
             }
-            if (cube instanceof Isometric) {
-                noStroke();
-                if (!monoChrome) {
-                    thisColor = random(pallet);
-                }
-                //--------------------------------------------------
-                // Bottom Face
-                // -------------------------------------------------
-                if (helper.flipACoin()) {
-                    fill(thisColor.h, thisColor.s, thisColor.l * lDark, 100 * lOpacity);
-                    cube.buildBottomFace();
-                }
-                if (helper.flipACoin() && texture) {
-                    // bottom side texture
-                    sideNoise(cube.g, cube.b, cube.f, cube.a, {h: thisColor.h, s: thisColor.s, l: thisColor.l * lDark});
-                }
-                if (helper.flipACoin() && bands) {
-                    // bottom bands
-                    sideBands(cube.a, cube.b, cube.f, cube.g, {h: thisColor.h, s: thisColor.s, l: thisColor.l * lDark});
-                }
 
-                //--------------------------------------------------
-                // Right Face
-                // -------------------------------------------------
-                if (helper.flipACoin()) {
-                    fill(thisColor.h, thisColor.s, thisColor.l * lLow, 100 * lOpacity);
-                    cube.buildRightFace();
-                }
-                if (helper.flipACoin() && texture) {
-                    // right side texture
-                    sideNoise(cube.g, cube.a, cube.e, cube.f, {h: thisColor.h, s: thisColor.s, l: thisColor.l * lLow});
-                }
-                if (helper.flipACoin() && bands) {
-                    // right bands
-                    sideBands(cube.g, cube.e, cube.a, cube.f, {h: thisColor.h, s: thisColor.s, l: thisColor.l * lLow});
-                }
-
-                //--------------------------------------------------
-                // Left Face
-                // -------------------------------------------------
-                if (helper.flipACoin()) {
-                    fill(thisColor.h, thisColor.s, thisColor.l * lHigh, 100 * lOpacity);
-                    cube.buildLeftFace();
-                }
-                if (helper.flipACoin() && texture) {
-                    // left side texture
-                    sideNoise(cube.c, cube.b, cube.g, cube.a, {h: thisColor.h, s: thisColor.s, l: thisColor.l * lHigh});
-                }
-                if (helper.flipACoin() && bands) {
-                    // left bands
-                    sideBands(cube.c, cube.g, cube.b, cube.a, {h: thisColor.h, s: thisColor.s, l: thisColor.l * lHigh});
-                }
-
-                //--------------------------------------------------
-                // Top Face
-                // -------------------------------------------------
-                if (helper.flipACoin()) {
-                    fill(thisColor.h, thisColor.s, thisColor.l, 100 * lOpacity);
-                    cube.buildTopFace();
-                }
-                if (helper.flipACoin() && texture) {
-                    // top texture
-                    sideNoise(cube.d, cube.c, cube.e, cube.g, {h: thisColor.h, s: thisColor.s, l: thisColor.l});
-                }
-                if (helper.flipACoin() && bands) {
-                    // top bands
-                    sideBands(cube.d, cube.c, cube.e, cube.g, {h: thisColor.h, s: thisColor.s, l: thisColor.l});
-                }
-            }
         }
-
     }
-  }
 }
 
 function sideBands(a, b, c, d, color) {
@@ -253,7 +286,7 @@ function sideNoise(a, b, c, d, color) {
         randY = random(-lerpADist, lerpADist);
         lerpB = createVector(lerpA.x + randX, lerpA.y + randY);
         if (helper.pointInPoly([b, a, c, d], lerpB)) {
-            let ellipseRandom = random(helper.range(1,4));
+            let ellipseRandom = random(helper.range(1, 4));
             ellipse(lerpB.x, lerpB.y, ellipseRandom * noise(lerpB.x, lerpB.y));
         }
     }
