@@ -1,0 +1,20 @@
+{
+  "settings": {
+    "margin": 100,
+    "cols": 3,
+    "rows": 4,
+    "monoChrome": false,
+    "texture": false,
+    "textureDensity": 0.05,
+    "bands": true,
+    "columnWidth": 50,
+    "transparent": false,
+    "loops": 100,
+    "colorAdjust": {
+      "opacity": 0.25,
+      "dark": 0.30,
+      "low": 0.55,
+      "high": 0.75
+    }
+  }
+}
