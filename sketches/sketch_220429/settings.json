@@ -1,0 +1,14 @@
+{
+  "settings": {
+    "cellWidth": 50,
+    "cellHeight" : 50,
+    "columns": 50,
+    "rows": 50,
+    "margin": 10,
+    "gradient": {
+      "strokeWidth": 1,
+      "tightness": 0.01
+    },
+    "transparent": false
+  }
+}
