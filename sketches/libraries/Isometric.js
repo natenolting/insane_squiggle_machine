@@ -5,7 +5,8 @@ class Isometric {
     heightMultiple = 0.577396542692509;
     sideW = 12;
     sideH = this.sideW * this.heightMultiple;
-
+    distance;
+    direction;
 
     constructor(startX, startY, sideW, sideH, multiplier) {
         this.startX = startX;
@@ -32,7 +33,10 @@ class Isometric {
         this.sideH = sideH * this.multiplier;
     }
 
-    pickDirection = function (direction, multiple) {
+    pickDirection = function (direction, distance) {
+
+        this.direction = direction;
+        this.distance = distance;
 
         let directions = {
             2: 'rectangleSe',
@@ -43,7 +47,7 @@ class Isometric {
             7: 'rectangleS',
         }
         if (direction in directions) {
-            eval(`this.${directions[direction]}(${multiple})`);
+            eval(`this.${directions[this.direction]}(${this.distance})`);
         }
 
         return this;

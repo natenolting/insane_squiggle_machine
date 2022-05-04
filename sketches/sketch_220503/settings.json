@@ -1,0 +1,21 @@
+{
+  "settings": {
+    "cellWidth": 100,
+    "cellHeight" : 100,
+    "columns": 100,
+    "rows": 100,
+    "margin": 50,
+    "transparent": false,
+    "opacity": 100,
+    "iterations": 1000,
+    "sizeVariation": [1,5],
+    "lengthVariation": [1,5],
+    "cubeSideWidth": 12,
+    "rollBetween": [2,5],
+    "faceLightness": {
+      "top": 1,
+      "left": 0.85,
+      "right": 0.65
+    }
+  }
+}
