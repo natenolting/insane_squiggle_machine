@@ -8,14 +8,14 @@
     "transparent": false,
     "opacity": 100,
     "iterations": 1000,
-    "sizeVariation": [1,5],
+    "sizeVariation": [1,10],
     "lengthVariation": [1,5],
     "cubeSideWidth": 12,
-    "rollBetween": [2,5],
+    "rollBetween": [1,7],
     "faceLightness": {
       "top": 1,
-      "left": 0.85,
-      "right": 0.65
+      "left": 0.80,
+      "right": 0.55
     }
   }
 }

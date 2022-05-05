@@ -99,16 +99,24 @@ function draw() {
 
 // create texture map
     texture = [];
-    for (var y = 0; y < 1; y+=0.006) {
-      for (var x = 0; x < 1; x+=0.006) {
+    for (var y = 0; y < 1; y+=0.004) {
+      for (var x = 0; x < 1; x+=0.004) {
         let xPos = lerp(margin, canvasWidth - margin, x);
         let yPos = lerp(margin, canvasHeight - margin, y);
         texture.push(createVector(xPos, yPos));
       }
     }
-    for (var i = 0; i < iterations * 5; i++) {
-      texture.push(createVector(random(canvasWidth), random(canvasHeight)))
+    let textureCount = texture.length;
+    for (var i = 0; i < textureCount; i++) {
+      let randX = randomGaussian(canvasWidth/2, canvasWidth/2 - margin * 2);
+      let randY = randomGaussian(canvasHeight/2, canvasHeight/2 - margin * 2);
+      texture.push(createVector(randX, randY))
     }
+  // fill(0,0,0,100);
+  // _.forEach(texture, function(t){
+  //       ellipse(t.x, t.y, 2);
+  // });
+  // return;
 
     let sizeOfShape;
     let roll;
@@ -167,9 +175,9 @@ function draw() {
           [iso.a, iso.b, iso.c, iso.g],
           texture,
           [
-            thisColor[0] * settings.faceLightness.right * 0.90,
-            thisColor[1] * settings.faceLightness.right * 0.90,
-            thisColor[2] * settings.faceLightness.right * 0.90,
+            thisColor[0] * settings.faceLightness.left * 0.85,
+            thisColor[1] * settings.faceLightness.left * 0.85,
+            thisColor[2] * settings.faceLightness.left * 0.85,
           ]
         );
 
@@ -185,9 +193,9 @@ function draw() {
           [iso.a, iso.g, iso.e, iso.f],
           texture,
           [
-            thisColor[0] * settings.faceLightness.right * 0.90,
-            thisColor[1] * settings.faceLightness.right * 0.90,
-            thisColor[2] * settings.faceLightness.right * 0.90,
+            thisColor[0] * settings.faceLightness.right * 0.80,
+            thisColor[1] * settings.faceLightness.right * 0.80,
+            thisColor[2] * settings.faceLightness.right * 0.80,
           ]
         );
 
@@ -268,9 +276,9 @@ function draw() {
           [newIso.a, newIso.b, newIso.c, newIso.g],
           texture,
           [
-            thisColor[0] * settings.faceLightness.right * 0.90,
-            thisColor[1] * settings.faceLightness.right * 0.90,
-            thisColor[2] * settings.faceLightness.right * 0.90,
+            thisColor[0] * settings.faceLightness.left * 0.85,
+            thisColor[1] * settings.faceLightness.left * 0.85,
+            thisColor[2] * settings.faceLightness.left * 0.85,
           ]
         );
 
@@ -286,9 +294,9 @@ function draw() {
           [newIso.a, newIso.g, newIso.e, newIso.f],
           texture,
           [
-            thisColor[0] * settings.faceLightness.right * 0.90,
-            thisColor[1] * settings.faceLightness.right * 0.90,
-            thisColor[2] * settings.faceLightness.right * 0.90,
+            thisColor[0] * settings.faceLightness.right * 0.80,
+            thisColor[1] * settings.faceLightness.right * 0.80,
+            thisColor[2] * settings.faceLightness.right * 0.80,
           ]
         );
 
