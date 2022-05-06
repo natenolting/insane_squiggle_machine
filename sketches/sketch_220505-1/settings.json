@@ -1,0 +1,29 @@
+{
+  "settings": {
+    "cellWidth": 50,
+    "cellHeight" : 50,
+    "columns": 100,
+    "rows": 100,
+    "margin": 50,
+    "transparent": false,
+    "opacity": 100,
+    "iterations": 1500,
+    "sizeVariation": [1,12],
+    "lengthVariation": [1,12],
+    "cubeSideWidth": 12,
+    "rollBetween": [1,3,5],
+    "faceLightness": {
+      "top": 1,
+      "left": 0.85,
+      "right": 0.5
+    },
+    "texture": {
+      "apply": true,
+      "density": 0.005,
+      "size": {
+        "mean": 1.5,
+        "sd": 0.5
+      }
+    }
+  }
+}
