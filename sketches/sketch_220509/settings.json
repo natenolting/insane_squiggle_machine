@@ -1,0 +1,22 @@
+{
+  "settings": {
+    "cellWidth": 200,
+    "cellHeight": 200,
+    "columns": 10,
+    "rows": 10,
+    "margin": 50,
+    "modifyOutOf": 10,
+    "split": {
+      "chance": 5,
+      "low": 2,
+      "high": 5
+    },
+    "enlargement": {
+      "chance": 10,
+      "low": 2,
+      "high": 10
+    },
+    "pixelFillRange": [2, 4],
+    "cellFillRange": [4, 8, 15, 16, 23, 42]
+  }
+}
