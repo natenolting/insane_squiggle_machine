@@ -1,0 +1,23 @@
+{
+  "settings": {
+    "cellWidth": 125,
+    "cellHeight": 125,
+    "columns": 40,
+    "rows": 6,
+    "margin": 0,
+    "modifyOutOf": 6,
+    "loops": 3,
+    "split": {
+      "chance": 1,
+      "low": 2,
+      "high": 3
+    },
+    "enlargement": {
+      "chance": 6,
+      "low": 3,
+      "high": 6
+    },
+    "pixelFillRange": [2, 4],
+    "cellFillRange": [4, 8, 15, 16, 23, 42]
+  }
+}
