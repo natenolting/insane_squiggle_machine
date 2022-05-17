@@ -64,8 +64,8 @@ function setup() {
     createCanvas(canvasWidth, canvasHeight);
     colorMode(HSL, 359, 100, 100, 100);
     pixelDensity(pixelD);
-    //pallets = palletData.pallets;
-    pallets = [['#ffffff', '#000000']];
+    pallets = palletData.pallets;
+    //pallets = [['#ffffff', '#000000']];
 
 }
 

@@ -29,7 +29,7 @@ let colRowAverage;
 let loops;
 
 function preload() {
-    palletData = loadJSON("../../data/20220408_palettes.json");
+    palletData = loadJSON("../../data/palettes-new.json");
     settingsData = loadJSON("./settings.json");
 }
 

@@ -2,7 +2,7 @@
   "settings": {
     "cellWidth": 125,
     "cellHeight": 125,
-    "columns": 40,
+    "columns": 6,
     "rows": 6,
     "margin": 0,
     "modifyOutOf": 6,
