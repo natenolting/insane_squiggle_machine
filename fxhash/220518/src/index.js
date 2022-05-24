@@ -11,6 +11,9 @@ const SIDE_HEIGHT_MULTIPLIER = 28/49;
 const PX_DENSITY = 4;
 const NOISE_SEED = (fxrand() * 100_000) >> 0
 const PALLET_ID = Math.floor(fxrand() * 4200);
+const CANVAS_WIDTH_MULTIPLIER = 1
+const CANVAS_HEIGHT_MULTIPLIER = 1
+const TRANSPARENT = false;
 const DEBUG = false;
 
 const config = {
@@ -103,7 +106,8 @@ function setupPosition() {
         pos.w = w;
         pos.h = w;
     }
-    pos.s = Math.min(window.innerWidth, window.innerHeight);
+    pos.w = pos.w * CANVAS_WIDTH_MULTIPLIER;
+    pos.h = pos.h * CANVAS_HEIGHT_MULTIPLIER;
     pos.t = 0;
     pos.l = 0;
 }
@@ -136,10 +140,10 @@ function setupSettings() {
     settings = settingsData.settings;
     settings.config = config;
     settings.cellsPerSide = getCellsFromString(config.cells);
-    settings.cellWidth = pos.w / settings.cellsPerSide;
-    settings.cellHeight = pos.h / settings.cellsPerSide;
-    settings.columns = settings.cellsPerSide;
-    settings.rows = settings.cellsPerSide;
+    settings.cellWidth = pos.w / (settings.cellsPerSide * CANVAS_WIDTH_MULTIPLIER);
+    settings.cellHeight = pos.h / (settings.cellsPerSide * CANVAS_HEIGHT_MULTIPLIER);
+    settings.columns = settings.cellsPerSide * CANVAS_WIDTH_MULTIPLIER;
+    settings.rows = settings.cellsPerSide * CANVAS_HEIGHT_MULTIPLIER;
     settings.margin = setupMargin();
     settings.iterations = setupIterations();
     settings.sizeVariation = setupSizeAndLengthVariation();
@@ -169,7 +173,15 @@ function setupSizeAndLengthVariation() {
 }
 
 function setupIterations() {
-    return floor(map(fxrand(), 0, 1, 500, 1000));
+    return floor(
+      map(
+        fxrand(),
+        0,
+        1,
+        500 * helper.mean([CANVAS_WIDTH_MULTIPLIER, CANVAS_HEIGHT_MULTIPLIER]),
+        1000 * helper.mean([CANVAS_WIDTH_MULTIPLIER, CANVAS_HEIGHT_MULTIPLIER])
+      )
+    );
 }
 
 function setupMargin() {
@@ -270,6 +282,9 @@ function initUsed()
 }
 
 function createBackground() {
+    if(TRANSPARENT) {
+      return
+    }
     fill(255, 255, 255, 1);
     rect(0, 0, pos.w, pos.h);
     noStroke();
@@ -507,9 +522,10 @@ window.draw = () => {
     fxpreview();
 }
 let saveCount = 0;
+let saveId = helper.makeid(10);
 function saveFileName() {
     let fileName;
-    fileName = `${saveId}_${saveCount}.jpg`;
+    fileName = `${saveId}_${saveCount}.${TRANSPARENT ? 'png' : 'jpeg'}`;
     saveCount++;
     return fileName;
 }
