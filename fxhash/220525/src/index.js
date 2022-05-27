@@ -14,12 +14,10 @@ const CANVAS_WIDTH_MULTIPLIER = 1
 const CANVAS_HEIGHT_MULTIPLIER = 1
 const SIDE_HEIGHT_MULTIPLIER = 28 / 49;
 const TRANSPARENT = false;
-const DEBUG = true;
+const DEBUG = false;
 const BASE_CELLS_PER_SIDE = 15;
-const BASE_CANVAS_WIDTH = 800;
-const BASE_CANVAS_HEIGHT = 800;
-const ENLARGED_CANVAS_WIDTH = 2500
-const ENLARGED_CANVAS_HEIGHT = 2500
+const ENLARGED_CANVAS_WIDTH = 3000;
+const ENLARGED_CANVAS_HEIGHT = 3000;
 const BASE_RAMP = 0.0005;
 const USE_ISOMETRIC = true
 const config = {
@@ -134,8 +132,20 @@ function setupPosition() {
 }
 
 function setupPallet() {
+
+  pallets = palletData.pallets;
+
+  // debugging pallets
+  // for (var i = 0; i < pallets.length; i++) {
+  //   let p = pallets[i];
+  //   console.log(i, p);
+  //   for (var h = 0; h < p.length; h++) {
+  //     let rgb = colors.HEXtoRGB(p[h])
+  //     let hsl = colors.RGBtoHSL(rgb[0], rgb[1], rgb[2])
+  //   }
+  // }
+
     // setup colors
-    pallets = palletData.pallets;
     pallet.i = PALLET_ID;
     pallet.h = pallets[pallet.i];
     for (const element of pallet.h) {
@@ -157,10 +167,10 @@ function setupSettings() {
     settings.rows = settings.cellsPerSide * CANVAS_HEIGHT_MULTIPLIER;
     settings.margin = setupMargin();
     settings.pallet = pallet;
-    settings.pixelDensityLow = 20
-    settings.pixelDensityHigh = 30
+    settings.pixelDensityLow = 30
+    settings.pixelDensityHigh = 40
     settings.pixelDensity = floor(map(fxrand(), 0, 1, settings.pixelDensityLow, settings.pixelDensityHigh));
-    settings.isoMaxMultiplier = floor(map(settings.pixelDensity, settings.pixelDensityLow, settings.pixelDensityHigh, 5, 8));
+    settings.isoMaxMultiplier = floor(map(settings.pixelDensity, settings.pixelDensityLow, settings.pixelDensityHigh, 4, 9));
     if (DEBUG) {
         console.log(settings);
     }
@@ -178,7 +188,7 @@ function setupCells() {
 }
 
 function setupMargin() {
-    return floor(helper.mean([settings.cellWidth, settings.cellHeight]));
+    return floor(helper.mean([settings.cellWidth, settings.cellHeight]) * .875);
 }
 
 function init() {
@@ -242,26 +252,15 @@ window.draw = () => {
 
     cG.angleMode(DEGREES);
     cG.push();
-    let roll = helper.rollADie(10);
-    roll = 1
+    let roll = helper.rollADie(4);
     switch (roll) {
-        case 5:
+        case 3:
             cG.translate(pos.w, 0);
             cG.rotate(90)
             break;
-        case 6:
+        case 4:
             cG.translate(0, pos.h);
             cG.rotate(-90)
-            break;
-        case 9:
-            cG.translate(-pos.w / 1.783, pos.h / 2);
-            cG.rotate(-45)
-            cG.scale(1.5);
-            break;
-        case 10:
-            cG.translate(pos.w / 2.00, -pos.h / 1.783);
-            cG.rotate(45)
-            cG.scale(1.5);
             break;
         default:
 
@@ -373,6 +372,50 @@ window.draw = () => {
 
     }
     cG.updatePixels();
+
+    let firstPixel = pixelPositions[0];
+    let firstColor = color(firstPixel.red, firstPixel.green, firstPixel.blue, 1)
+
+    let middlePixel = pixelPositions[floor(pixelPositions.length / 2)];
+    let middleColor = color(middlePixel.red, middlePixel.green, middlePixel.blue, 1)
+
+    let lastPixel = pixelPositions[pixelPositions.length - 1];
+    let lastColor = color(lastPixel.red, lastPixel.green, lastPixel.blue, 1)
+    let pixelColorLerp;
+
+    if (roll < 3) {
+      // build gradeint from top to bottom
+      for (let y = 0; y < floor(cG.height / 2); y++) {
+        pixelColorLerp = lerpColor(firstColor, middleColor, y / (cG.height / 2));
+        cG.stroke(pixelColorLerp);
+        cG.strokeWeight(2);
+        cG.line(0, y, cG.width, y);
+      }
+      for (let y = 0; y < floor(cG.height / 2); y++) {
+        pixelColorLerp = lerpColor(middleColor, lastColor, y / (cG.height / 2));
+        cG.stroke(pixelColorLerp);
+        cG.strokeWeight(2);
+        cG.line(0, y + floor(cG.height/2), cG.width, y + floor(cG.height/2));
+      }
+
+    } else {
+      // build gradeint from left to right
+      for (let x = 0; x < floor(cG.width / 2); x++) {
+        pixelColorLerp = lerpColor(firstColor, middleColor, x / (cG.width / 2));
+        cG.stroke(pixelColorLerp);
+        cG.strokeWeight(2);
+        cG.line(x, 0, x, cG.height);
+      }
+      for (let x = 0; x < floor(cG.width / 2); x++) {
+        pixelColorLerp = lerpColor(middleColor, lastColor, x / (cG.width / 2));
+        cG.stroke(pixelColorLerp);
+        cG.strokeWeight(2);
+        cG.line(x + floor(cG.width / 2), 0, x + floor(cG.width / 2), cG.height);
+      }
+    }
+
+    cG.noStroke();
+
 
     for (var i = 0; i < pixelPositions.length; i++) {
 
