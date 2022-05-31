@@ -1,58 +1,99 @@
 import "./p5.min.js";
 import "./p5.collide2d.min.js";
 
-const colors = new Colors();
-const helper = new Helpers();
-
-function getCellSizeString(value) {
-    if (value < .2) {
-        return "small"
+// get all random values from one location
+const RANDOMIZER_INCREMENT = fxrand();
+let randomizer = RANDOMIZER_INCREMENT;
+function getRandomizer() {
+    randomizer += RANDOMIZER_INCREMENT;
+    if (randomizer >= 1) {
+        randomizer = fxrand();
     }
-    if (value < .4) {
-        return "medium"
-    }
-    if (value < .6) {
-        return "large"
-    }
-    if (value < 1) {
-        return "xlarge"
-    }
+    return randomizer;
 }
 
-function getCellsFromString(string) {
-    let c;
-    switch (string) {
-        case "small":
-            c = round(map(fxrand(), 0, 1, 16, 21))
+// flip a coin but more like toggle on and off
+let currentRandomizerCoinFlip = Boolean(Math.round(getRandomizer()));
+
+function randomzerCoinFlip() {
+    currentRandomizerCoinFlip = !currentRandomizerCoinFlip;
+    return currentRandomizerCoinFlip;
+};
+
+// randomize a roll between 1 and x
+function randomizerRollADie(roll) {
+    return round(map(getRandomizer(), 0, 1, 1, roll));
+}
+
+const colors = new Colors();
+const helper = new Helpers();
+const DEBUG = false;
+const ENLARGED_CANVAS_WIDTH = 3000;
+const ENLARGED_CANVAS_HEIGHT = 3000;
+const CANVAS_WIDTH_MULTIPLIER = 1
+const CANVAS_HEIGHT_MULTIPLIER = 1
+const PALLET_ID = Math.floor(getRandomizer() * 4200);
+const USE_ISOMETRIC = true;
+const SIDE_HEIGHT_MULTIPLIER = 28 / 49;
+const BASE_CELLS_PER_SIDE = 15;
+const TRANSPARENT = false;
+const X_SMALL = 'tightest';
+const SMALL = 'tight';
+const MEDIUM = 'middle';
+const LARGE = 'loose';
+const X_LARGE = 'loosest';
+const COLORS_RAINDOW = ['ff0000', 'ffa500', 'ffff00', '008000', '0000ff', '4b0082', 'ee82ee'];
+const COLORS_BLACK_WHITE = ['000000', 'aaaaaa', 'bbbbbb', 'cccccc', 'dddddd', 'eeeeee', 'ffffff'];
+const COLORS_MINECRAFT = ['f9ffff',
+    '9c9d97',
+    '474f52',
+    '1d1c21',
+    'ffd83d',
+    'f9801d',
+    'b02e26',
+    '825432',
+    '80c71f',
+    '5d7c15',
+    '3ab3da',
+    '169c9d',
+    '3c44a9',
+    'f38caa',
+    'c64fbd',
+    '8932b7',
+];
+
+
+const SPECIAL_PALLET_PICKER = Math.round(getRandomizer() * 1000);
+
+function getPalletString() {
+    switch (SPECIAL_PALLET_PICKER) {
+        case 100:
+            return 'RAINBOW';
             break;
-        case "medium":
-            c = round(map(fxrand(), 0, 1, 11, 16))
+        case 200:
+            return 'BLACK_WHITE';
             break;
-        case "large":
-            c = round(map(fxrand(), 0, 1, 6, 11))
-            break;
-        case "xlarge":
-            c = round(map(fxrand(), 0, 1, 2, 6))
+        case 300:
+            return 'MINECRAFT';
             break;
         default:
-            c = (3 + fxrand() * 10) >> 0;
-
+            return 'RANDOM';
     }
-    return c;
 }
 
 const config = {
-    noiseSeed: (fxrand() * 100_000) >> 0,
+    noiseSeed: (getRandomizer() * 100_000) >> 0,
 
     /** number of rows & columns */
-    cells: getCellSizeString(fxrand()),
+    cells: getCellSizeString(getRandomizer()),
 
     /** noise scale  */
-    noiseScale: 0.5 + fxrand() * 24,
-};
+    noiseScale: 0.5 + getRandomizer() * 24,
 
-window.$fxhashFeatures = {
-    ...config,
+    pallet: getPalletString(),
+
+    boost: SPECIAL_PALLET_PICKER <= 500 ? 'dark' : 'light'
+
 };
 
 const pallet = {
@@ -65,7 +106,6 @@ const pallet = {
     // pallet hsl colors
     hsl: [],
 }
-
 const secondaryPallet = {
     // pallet index
     i: null,
@@ -76,26 +116,57 @@ const secondaryPallet = {
     // pallet hsl colors
     hsl: [],
 }
-
-const pos = {
-    /** width */
-    w: null,
-    /** height */
-    h: null,
-    /** size */
-    s: null,
-    /** left */
-    l: null,
-    /** top */
-    t: null,
-};
-
+const pos = {};
 let palletData;
+let pallets;
 let settingsData;
 let settings;
 let saveCount = 0;
 let saveId = helper.makeid(10);
-let doCellColorIndex = 0;
+let colorIndex = 0;
+let colorSet = [];
+let cG;
+
+function getCellSizeString(value) {
+    if (value <= .2) {
+        return X_SMALL
+    }
+    if (value <= .4) {
+        return SMALL
+    }
+    if (value <= .6) {
+        return MEDIUM
+    }
+    if (value <= .8) {
+        return LARGE
+    }
+    if (value <= 1) {
+        return X_LARGE
+    }
+}
+
+function getCellsFromString(string) {
+    let c;
+    let base = BASE_CELLS_PER_SIDE;
+    switch (string) {
+        case X_LARGE:
+            c = base
+            break;
+        case LARGE:
+            c = base * .5
+            break;
+        case MEDIUM:
+            c = base * 1.5
+            break;
+        case SMALL:
+            c = base * 2
+            break;
+        case X_SMALL:
+            c = base * 2.5
+            break;
+    }
+    return c;
+}
 
 function setupCells() {
     let e, s, c;
@@ -111,12 +182,12 @@ function setupCells() {
 
         let c = element;
 
-        let splitOrEnlarge = helper.rollADie(settings.modifyOutOf);
+        let splitOrEnlarge = randomizerRollADie(settings.modifyOutOf);
 
         if (splitOrEnlarge === settings.enlargement.chance) {
             // enlarge
             let enlargementRange = helper.range(settings.enlargement.low, settings.enlargement.high);
-            let enlargementBy = enlargementRange[round(map(fxrand(), 0, 1, 0, enlargementRange.length - 1))];
+            let enlargementBy = enlargementRange[round(map(getRandomizer(), 0, 1, 0, enlargementRange.length - 1))];
             let newEnl = new Cell(0, 0, c.x, c.y, c.w * enlargementBy, c.h * enlargementBy, false, settings.enlarges.length + 1);
 
             let addEnl = true;
@@ -137,7 +208,7 @@ function setupCells() {
         if (splitOrEnlarge === settings.split.chance) {
             // split
             let splitRange = helper.range(settings.split.low, settings.split.high);
-            let splitBy = splitRange[round(map(fxrand(), 0, 1, 0, splitRange.length - 1))];
+            let splitBy = splitRange[round(map(getRandomizer(), 0, 1, 0, splitRange.length - 1))];
             let splitW = c.w / splitBy;
             let splitH = c.h / splitBy;
             for (let sc = 0; sc < c.w; sc += splitW) {
@@ -184,13 +255,13 @@ function setupCells() {
             settings.cells.push(c);
         }
     }
-    for (let i = 0; i < settings.enlarges.length; i++) {
-        c = settings.enlarges[i];
-        if (helper.rollADie(settings.modifyOutOf) === settings.split.chance) {
+    for (const element of settings.enlarges) {
+        c = element;
+        if (randomizerRollADie(settings.modifyOutOf) === settings.split.chance) {
 
             // split the large cell into smaller Cells
             let splitByRange = helper.range(settings.split.low, settings.split.high)
-            let splitBy = splitByRange[round(map(fxrand(), 0, 1, 0, splitByRange.length - 1))];
+            let splitBy = splitByRange[round(map(getRandomizer(), 0, 1, 0, splitByRange.length - 1))];
             let splitW = c.w / splitBy;
             let splitH = c.h / splitBy;
             for (let sc = 0; sc < c.w; sc += splitW) {
@@ -208,22 +279,33 @@ function setupCells() {
     if (settings.canvasWidth > settings.canvasHeight) {
         fullCellAmount = floor((settings.canvasWidth - (settings.margin * 2)) / (settings.canvasHeight - (settings.margin * 2)));
         settings.fullCells = (new Cells(fullCellAmount, 1, settings.canvasHeight, settings.canvasHeight).populateCells(false)[0]);
-        for (var i = 0; i < settings.fullCells.length; i++) {
-            settings.fullCells[i].x += (settings.canvasWidth % settings.canvasHeight) / 2
+        for (const element of settings.fullCells) {
+            element.x += (settings.canvasWidth % settings.canvasHeight) / 2
         }
     } else {
         fullCellAmount = floor((settings.canvasHeight - (settings.margin * 2)) / (settings.canvasWidth - (settings.margin * 2)));
         settings.fullCells = (new Cells(1, fullCellAmount, settings.canvasWidth, settings.canvasWidth).populateCells(false)[0]);
-        for (var i = 0; i < settings.fullCells.length; i++) {
-            settings.fullCells[i].y += (settings.canvasHeight % settings.canvasWidth) / 2
+        for (const element of settings.fullCells) {
+            element.y += (settings.canvasHeight % settings.canvasWidth) / 2
         }
     }
 
 }
 
 function setupPosition() {
-    let w = window.innerWidth;
-    let h = window.innerHeight;
+    let cW = window.innerWidth;
+    let cH = window.innerHeight;
+
+    if (cW > cH) {
+        pos.cW = cH;
+        pos.cH = cH;
+    } else {
+        pos.cW = cW;
+        pos.cH = cW;
+    }
+
+    let w = ENLARGED_CANVAS_WIDTH;
+    let h = ENLARGED_CANVAS_HEIGHT;
     if (w > h) {
         pos.w = h;
         pos.h = h;
@@ -231,7 +313,8 @@ function setupPosition() {
         pos.w = w;
         pos.h = w;
     }
-    pos.s = Math.min(window.innerWidth, window.innerHeight);
+    pos.w = w * CANVAS_WIDTH_MULTIPLIER;
+    pos.h = h * CANVAS_HEIGHT_MULTIPLIER;
     pos.t = 0;
     pos.l = 0;
 }
@@ -240,147 +323,101 @@ function setupSettings() {
     let cfs = getCellsFromString(config.cells)
     // prep settings object
     settings = settingsData.settings;
-    settings.canvasWidth = pos.s;
-    settings.canvasHeight = pos.s;
-    settings.cellWidth = pos.s / cfs;
-    settings.cellHeight = pos.s / cfs;
+    settings.canvasWidth = pos.w;
+    settings.canvasHeight = pos.h;
+    settings.cellWidth = pos.w / cfs;
+    settings.cellHeight = pos.h / cfs;
     settings.cols = cfs;
     settings.rows = cfs;
     settings.colRowAverage = helper.average([settings.cols, settings.rows]);
+    settings.margin = setupMargin();
+    settings.pixelDensityLow = 12
+    settings.pixelDensityHigh = 24
+    settings.pixelDensity = floor(map(getRandomizer(), 0, 1, settings.pixelDensityLow, settings.pixelDensityHigh));
+    settings.isoMaxMultiplier = floor(map(settings.pixelDensity, settings.pixelDensityLow, settings.pixelDensityHigh, 5, 8));
+    settings.isoMaxDirections = round(map(getRandomizer(), 0, 1, 1, 7));
 
+}
+
+function vectorsAreInsideBounds(iso) {
+    return iso.a.x > settings.margin && iso.a.y > settings.margin && iso.a.x < pos.w - settings.margin && iso.a.y < pos.h - settings.margin &&
+        iso.b.x > settings.margin && iso.b.y > settings.margin && iso.b.x < pos.w - settings.margin && iso.b.y < pos.h - settings.margin &&
+        iso.c.x > settings.margin && iso.c.y > settings.margin && iso.c.x < pos.w - settings.margin && iso.c.y < pos.h - settings.margin &&
+        iso.d.x > settings.margin && iso.d.y > settings.margin && iso.d.x < pos.w - settings.margin && iso.d.y < pos.h - settings.margin &&
+        iso.e.x > settings.margin && iso.e.y > settings.margin && iso.e.x < pos.w - settings.margin && iso.e.y < pos.h - settings.margin &&
+        iso.f.x > settings.margin && iso.f.y > settings.margin && iso.f.x < pos.w - settings.margin && iso.f.y < pos.h - settings.margin &&
+        iso.g.x > settings.margin && iso.g.y > settings.margin && iso.g.x < pos.w - settings.margin && iso.g.y < pos.h - settings.margin
+}
+
+function setupMargin() {
+    return floor(helper.mean([pos.w * .03, pos.h * .03]));
+}
+
+function incrementColorIndex() {
+    colorIndex++
+    if (colorIndex >= pallet.rgb.length - 1) {
+        colorIndex = 0;
+    }
 }
 
 function setupPallet() {
+
+
+    let palletId = PALLET_ID;
+    pallets = palletData.pallets;
+    // any "special" pallets
+    switch (config.pallet) {
+        case 'RAINBOW':
+            pallet.h = COLORS_RAINDOW;
+            break;
+        case 'BLACK_WHITE':
+            pallet.h = COLORS_BLACK_WHITE;
+            break;
+        case 'MINECRAFT':
+            pallet.h = COLORS_MINECRAFT;
+            break;
+        default:
+            pallet.h = pallets[palletId];
+    }
+
     // setup colors
-    // the main pallet will be black and white
-    let pallets = [['ffffff', '000000']]
-    pallet.i = floor(map(fxrand(), 0, 1, 0, pallets.length - 1));
-    pallet.h = pallets[pallet.i];
+
+    pallet.i = palletId;
+    pallet.rgb = [];
+    pallet.hsl = [];
+    let colorAverages = [];
     for (const element of pallet.h) {
         pallet.rgb.push(colors.HEXtoRGB(element));
         let rgb = pallet.rgb[pallet.rgb.length - 1];
+        colorAverages.push(helper.mean(rgb))
         pallet.hsl.push(colors.RGBtoHSL(rgb[0], rgb[1], rgb[2]));
     }
 
-    settings.pallet = pallet;
-
-    // the secondary pallet used for overlays or what ever
-    let secondaryPallets = palletData.pallets;
-    secondaryPallet.i = floor(map(fxrand(), 0, 1, 0, secondaryPallets.length - 1));
-    secondaryPallet.h = secondaryPallets[secondaryPallet.i];
-    for (const element of secondaryPallet.h) {
-        secondaryPallet.rgb.push(colors.HEXtoRGB(element));
-        let rgb = secondaryPallet.rgb[secondaryPallet.rgb.length - 1];
-        secondaryPallet.hsl.push(colors.RGBtoHSL(rgb[0], rgb[1], rgb[2]));
-    }
-    settings.secondaryPallet = secondaryPallet;
-}
-
-function doBackground(cell, opacity = 100) {
-    cell.used = true;
-
-    // select which pallet we're using
-    let pal = helper.isEven(doCellColorIndex) ? settings.pallet : settings.secondaryPallet;
-
-    let fc = pal.hsl[doCellColorIndex];
-
-    let cG = createGraphics(cell.w, cell.h);
-    let cGCell = new Cell(0, 0, 0, 0, cell.w, cell.h, cell.used, cell.index);
-
-    let cellClass = new FillCells(cG, cGCell, pal.hsl, opacity);
-    cellClass.setColorIndex(doCellColorIndex);
-    cellClass.cG.colorMode(HSL, 359, 100, 100, 100);
-    cellClass.cG.noStroke();
-    cellClass.cG.fill(fc.h, fc.s, fc.l, cellClass.opacity);
-
-    let pixelWidthVar, pixelWidthRange;
-    if (settings.pixelFillRange.length === 2) {
-        pixelWidthRange = helper.range(settings.pixelFillRange[0], settings.pixelFillRange[1]);
-    } else {
-        pixelWidthRange = settings.pixelFillRange;
-    }
-    pixelWidthVar = pixelWidthRange[round(map(fxrand(), 0, 1, 0, pixelWidthRange.length - 1))];
-
-    let rollInitialFill = helper.rollADie(4);
-    //let rollInitialFill = 4
-    switch (rollInitialFill) {
-        case 1:
-            cellClass.cG.rect(0, 0, cGCell.w, cGCell.h);
-            break;
-        case 2:
-            cellClass.pixelated(int(settings.colRowAverage * pixelWidthVar), int(settings.colRowAverage * pixelWidthVar), 'circle');
-            break;
-        case 3:
-            cellClass.pixelated(int(settings.colRowAverage * pixelWidthVar), int(settings.colRowAverage * pixelWidthVar));
-            break;
-        case 4:
-            cellClass.gradient();
-            break;
-    }
-
-    image(cellClass.cG, cell.x, cell.y, cell.w, cell.h);
-
-    doCellColorIndex = cellClass.colorIndex;
-    if (doCellColorIndex >= pal.length) {
-        doCellColorIndex = 0;
+    while (helper.mean(colorAverages) < 90) {
+        if (palletId > pallets.length - 1) {
+            palletId = 0;
+        }
+        pallet.i = palletId;
+        pallet.h = pallets[pallet.i];
+        pallet.rgb = [];
+        pallet.hsl = [];
+        colorAverages = [];
+        for (const element of pallet.h) {
+            pallet.rgb.push(colors.HEXtoRGB(element));
+            let rgb = pallet.rgb[pallet.rgb.length - 1];
+            colorAverages.push(helper.mean(rgb))
+            pallet.hsl.push(colors.RGBtoHSL(rgb[0], rgb[1], rgb[2]));
+        }
+        palletId++;
+        //console.log(pallet, colorAverages, helper.mean(colorAverages))
     }
 }
 
-function doCell(cell, opacity = 100) {
-
-    // select which pallet we're using
-    let pal = helper.isEven(doCellColorIndex) ? settings.pallet : settings.secondaryPallet;
-
-    if (pal.length > 2) {
-        pal.shift();
-    }
-    let cG = createGraphics(cell.w, cell.h);
-    let cGCell = new Cell(0, 0, 0, 0, cell.w, cell.h, cell.used, cell.index);
-    let cellClass = new FillCells(cG, cGCell, pal.hsl, opacity);
-    cellClass.setColorIndex(doCellColorIndex);
-    cellClass.cG.colorMode(HSL, 359, 100, 100, 100);
-    cellClass.cG.noStroke();
-    cellClass.cG.fill(0, 0, 0, cellClass.opacity);
-
-
-    let fillRange, fillRangeRange;
-    if (settings.cellFillRange.length === 2) {
-        fillRangeRange = helper.range(settings.cellFillRange[0], settings.cellFillRange[1]);
-    } else {
-        fillRangeRange = settings.cellFillRange;
-    }
-    fillRange = fillRangeRange[round(map(fxrand(), 0, 1, 0, fillRangeRange.length - 1))]
-    let rollForFill = helper.rollADie(7);
-    switch (rollForFill) {
-        case 1:
-            cellClass.target(fillRange);
-            break;
-        case 2:
-            cellClass.diamond(fillRange);
-            break;
-        case 3:
-            cellClass.square(fillRange);
-            break;
-        case 4:
-            cellClass.cheerio();
-            break;
-        case 5:
-            cellClass.cross(fillRange);
-            break;
-        case 6:
-            cellClass.times(fillRange);
-            break;
-        case 7:
-            cellClass.times(fillRange);
-            break;
-    }
-
-    image(cellClass.cG, cell.x, cell.y, cell.w, cell.h);
-
-    doCellColorIndex = cellClass.colorIndex;
-    if (doCellColorIndex >= pal.length) {
-        doCellColorIndex = 0;
-    }
+function saveFileName() {
+    let fileName;
+    fileName = `${saveId}_${saveCount}.${TRANSPARENT ? 'png' : 'jpg'}`;
+    saveCount++;
+    return fileName;
 }
 
 function init() {
@@ -388,12 +425,14 @@ function init() {
     setupPosition();
     setupSettings();
     setupPallet();
-    pixelDensity(4);
+
     frameRate(config.frameRate);
 
     // prep cells
     setupCells();
-    console.log(settings)
+    if (DEBUG) {
+        console.log(config, settings, pallet, pos);
+    }
 
 }
 
@@ -402,10 +441,16 @@ window.preload = () => {
     settingsData = loadJSON("./settings.json");
 }
 
+window.$fxhashFeatures = {
+    ...config,
+};
+
+
 window.setup = () => {
     init();
-    colorMode(HSL, 359, 100, 100, 100);
-    createCanvas(pos.w, pos.h);
+    pixelDensity(1);
+    colorMode(RGB, 255, 255, 255, 1);
+    createCanvas(pos.cW, pos.cH);
 };
 
 window.windowResized = () => {
@@ -413,47 +458,305 @@ window.windowResized = () => {
     // init();
 };
 
+function verticalGradient(cell, colors) {
+
+    let pixelColorLerp;
+    let lerpPercent;
+    for (let y = 0; y < floor(cell.h / 2); y++) {
+        lerpPercent = y / (cell.h / 2);
+        pixelColorLerp = lerpColor(colors[0], colors[1], lerpPercent);
+        cG.stroke(pixelColorLerp);
+        cG.strokeWeight(2);
+        cG.line(cell.x, cell.y + y, cell.x + cell.w, cell.y + y);
+    }
+    for (let y = 0; y < floor(cell.h / 2); y++) {
+        lerpPercent = y / (cell.h / 2);
+        pixelColorLerp = lerpColor(colors[1], colors[2], lerpPercent);
+        cG.stroke(pixelColorLerp);
+        cG.strokeWeight(2);
+        cG.line(cell.x, cell.y + cell.h / 2 + y, cell.x + cell.w, cell.y + cell.h / 2 + y);
+    }
+
+}
+
+// build gradeint from left to right
+function horizontalGradient(cell, colors) {
+
+    let pixelColorLerp;
+    let lerpPercent;
+    for (let x = 0; x < floor(cell.w / 2); x++) {
+        lerpPercent = x / (cell.w / 2);
+        pixelColorLerp = lerpColor(colors[0], colors[1], lerpPercent);
+        cG.stroke(pixelColorLerp);
+        cG.strokeWeight(2);
+        cG.line(cell.x + x, cell.y, cell.x + x, cell.y + cell.h);
+    }
+    for (let x = 0; x < floor(cell.w / 2); x++) {
+        lerpPercent = x / (cell.w / 2);
+        pixelColorLerp = lerpColor(colors[1], colors[2], lerpPercent);
+        cG.stroke(pixelColorLerp);
+        cG.strokeWeight(2);
+        cG.line(cell.x + cell.w / 2 + x, cell.y, cell.x + cell.w / 2 + x, cell.y + cell.h);
+    }
+
+}
+
+function drawCells(allCells, colorSet) {
+
+    //console.log(`Total Cells: ${allCells.length}`);
+
+    //let used = 0;
+    for (const element of allCells) {
+        let c = element;
+
+        // shuffle the color set
+        let cS = helper.shuffleArray(colorSet);
+
+        // roll to get which direction we're going to spred to (or don't)
+        let roll = randomizerRollADie(5);
+        roll = 1
+        switch (roll) {
+            case 1:
+                // spred north
+                if (c.y - c.h > 0) {
+                    c.y = c.y - c.h;
+                    c.h = c.h * 2;
+                }
+                break;
+            case 2:
+                // spred south
+                if (c.y + c.h * 2 < cG.height) {
+                    c.h = c.h * 2
+                }
+                break;
+            case 3:
+                // spred east
+                if (c.x - c.w > 0) {
+                    c.x = c.x - c.w;
+                    c.w = c.w * 2;
+                }
+                break;
+            case 4:
+                // spred west
+                if (c.x + c.w * 2 < cG.width) {
+                    c.w = c.w * 2;
+                }
+                break;
+            default:
+
+        }
+
+        cG.noStroke();
+        let rollForFill = randomizerRollADie(4);
+        switch (rollForFill) {
+            case 1:
+                horizontalGradient(c, cS);
+                break;
+            case 2:
+                verticalGradient(c, cS);
+                break;
+            case 3:
+                cG.fill(floor(map(getRandomizer(), 0, 1, 0, cS.length)));
+                cG.rect(c.x, c.y, c.w, c.h)
+            case 4:
+                cG.fill(0, 0, 0, 1);
+                cG.rect(c.x, c.y, c.w, c.h)
+            default:
+        }
+
+        //used++;
+    }
+//console.log(`Total Cells Used: ${used}`);
+}
+
 window.draw = () => {
     noLoop();
-    background(0, 0, 100, 100);
 
-    // top left of square
-    translate(pos.l, pos.t);
-    fill(0, 0, 100, 100);
+    background(255, 255, 255, 1);
+    fill(255, 255, 255, 1);
     noStroke();
-    rect(0, 0, pos.s, pos.s);
+    rect(0, 0, pos.cW, pos.cH)
 
-    // background large cells to fill in any blank space
-    _.forEach(settings.fullCells, function (c) {
+    cG = createGraphics(pos.w, pos.h);
+    cG.colorMode(RGB, 255, 255, 255, 1);
+    cG.background(255, 255, 255, 1);
+    cG.pixelDensity(1);
+    cG.blendMode(BLEND)
+    colorSet = [];
 
-        doBackground(c);
-        doCell(c);
-    });
+    for (const element of pallet.rgb) {
+        let c1 = pallet.rgb[colorIndex];
+        let color1 = color(c1[0], c1[1], c1[2], 1)
+        colorSet.push(color1)
+        incrementColorIndex()
+    }
 
-    let allCells = settings.cells.concat(settings.enlarges, settings.splits);
-    _.forEach(allCells, function (c) {
+    verticalGradient(settings.fullCells[0], colorSet);
 
-        doCell(c);
-    });
+    drawCells(settings.enlarges, colorSet);
+    drawCells(settings.cells, colorSet);
+    drawCells(settings.splits, colorSet);
+
+    if (USE_ISOMETRIC) {
+
+        let pixelPositions = [];
+        cG.loadPixels();
+        for (var y = 0; y < cG.height; y += settings.pixelDensity) {
+            for (var x = 0; x < cG.width; x += settings.pixelDensity) {
+
+                let index = (x + y * cG.width) * 4;
+                let r = cG.pixels[index];
+                let g = cG.pixels[index + 1];
+                let b = cG.pixels[index + 2];
+                let a = cG.pixels[index + 3];
+                let averageColor = helper.mean([r, g, b]);
+                pixelPositions.push(
+                    {
+                        "position": createVector(x, y),
+                        "red": r,
+                        "green": g,
+                        "blue": b,
+                        "average": averageColor,
+                    }
+                );
+            }
+        }
+        cG.updatePixels();
+        if (randomzerCoinFlip()) {
+            verticalGradient(settings.fullCells[0], colorSet);
+        } else {
+            horizontalGradient(settings.fullCells[0], colorSet);
+        }
+
+        cG.fill(255, 255, 255, .25);
+        cG.rect(0, 0, cG.width, cG.height);
+
+        cG.noStroke();
+
+        let allowedDirections = [];
+        for (var r = 0; r <= settings.isoMaxDirections; r++) {
+            if (randomizerRollADie(10) < 8) {
+                allowedDirections.push(round(map(getRandomizer(), 0, 1, 1, 7)));
+            }
+        }
+
+        for (const element of pixelPositions) {
+
+            let p = element;
+            if (p.average === 0) {
+                if (randomizerRollADie(20) === 20) {
+                    let blackReplace = colorSet[floor(map(getRandomizer(), 0, 1, 0, colorSet.length))];
+                    p = {
+                        "position": p.position,
+                        "red": red(blackReplace),
+                        "green": green(blackReplace),
+                        "blue": blue(blackReplace),
+                        "average": helper.mean([red(blackReplace), green(blackReplace), blue(blackReplace)]),
+                    }
+                } else {
+                    continue;
+                }
+            }
+
+            if(config.boost === 'dark') {
+              p.average = 255 - p.average;
+            }
+
+            let isosSideWidth = map(p.average, 0, 100, 1, settings.isoMaxMultiplier);
+            let isosSizeMultipler = map(p.average, 0, 255, 1, settings.isoMaxMultiplier);
+            let isoLengthMultipler = map(p.average, 0, 255, 1, settings.isoMaxMultiplier);
 
 
+            cG.noStroke();
+            let iso = new Isometric(
+                p.position.x,
+                p.position.y,
+                isosSideWidth,
+                isosSideWidth * SIDE_HEIGHT_MULTIPLIER,
+                isosSizeMultipler
+            );
+            let directionRoll = allowedDirections[floor(map(getRandomizer(), 0, 1, 0, allowedDirections.length))];
+
+            iso.pickDirection(directionRoll, isoLengthMultipler);
+
+
+            let lerpAmount = getRandomizer();
+            if ([1, 2, 6, 7].includes(directionRoll)) {
+                //console.log('slim vertical', lerpAmount, iso);
+                iso.d = p5.Vector.lerp(iso.c, iso.d, lerpAmount);
+                iso.e = p5.Vector.lerp(iso.g, iso.e, lerpAmount);
+                iso.f = p5.Vector.lerp(iso.a, iso.f, lerpAmount);
+            }
+
+            if ([3, 5].includes(directionRoll)) {
+                iso.c = p5.Vector.lerp(iso.g, iso.c, lerpAmount);
+                iso.d = p5.Vector.lerp(iso.e, iso.d, lerpAmount);
+                iso.b = p5.Vector.lerp(iso.a, iso.b, lerpAmount);
+            }
+
+            if (directionRoll === 4) {
+                iso.d = p5.Vector.lerp(iso.c, iso.d, lerpAmount);
+                iso.e = p5.Vector.lerp(iso.g, iso.e, lerpAmount);
+                iso.f = p5.Vector.lerp(iso.a, iso.f, lerpAmount);
+
+            }
+
+            if (vectorsAreInsideBounds(iso)) {
+
+                cG.fill(
+                    p.red * settings.faceLightness.top,
+                    p.green * settings.faceLightness.top,
+                    p.blue * settings.faceLightness.top,
+                    1
+                );
+                // build the top
+                cG.beginShape();
+                cG.vertex(iso.g.x, iso.g.y);
+                cG.vertex(iso.c.x, iso.c.y);
+                cG.vertex(iso.d.x, iso.d.y);
+                cG.vertex(iso.e.x, iso.e.y);
+                cG.endShape(CLOSE)
+
+                cG.fill(
+                    p.red * settings.faceLightness.left,
+                    p.green * settings.faceLightness.left,
+                    p.blue * settings.faceLightness.left,
+                    1
+                );
+                // iso.buildLeftFace();
+                cG.beginShape();
+                cG.vertex(iso.a.x, iso.a.y);
+                cG.vertex(iso.b.x, iso.b.y);
+                cG.vertex(iso.c.x, iso.c.y);
+                cG.vertex(iso.g.x, iso.g.y);
+                cG.endShape(CLOSE)
+
+                cG.fill(
+                    p.red * settings.faceLightness.right,
+                    p.green * settings.faceLightness.right,
+                    p.blue * settings.faceLightness.right,
+                    1
+                );
+                //iso.buildRightFace();
+                cG.beginShape();
+                cG.vertex(iso.a.x, iso.a.y);
+                cG.vertex(iso.g.x, iso.g.y);
+                cG.vertex(iso.e.x, iso.e.y);
+                cG.vertex(iso.f.x, iso.f.y);
+                cG.endShape(CLOSE)
+            }
+
+        }
+
+
+    }
+
+    image(cG, 0, 0, pos.cW, pos.cH);
 
     fxpreview();
 };
 
-function saveFileName() {
-    let fileName;
-    fileName = `${saveId}_${saveCount}.jpg`;
-    saveCount++;
-    return fileName;
-}
-
 window.keyPressed = () => {
-    // if (key === "r") {
-    //   clear();
-    //   init();
-    //   redraw();
-    // }
 
     if (key === "s") {
         save(saveFileName());

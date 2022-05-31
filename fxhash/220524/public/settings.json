@@ -25,7 +25,12 @@
     "cells": [],
     "fullCells": [],
     "splits": [],
-    "enlarges": []
-
+    "enlarges": [],
+    "faceLightness": {
+      "top": 1,
+      "left": 0.85,
+      "right": 0.5
+    }
   }
+
 }
