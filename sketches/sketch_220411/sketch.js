@@ -4,6 +4,8 @@ const colors = new Colors();
 let canvasWidth = 2000;
 let canvasHeight = 2000;
 
+const SIDE_HEIGHT_MULTIPLIER = 28 / 49;
+
 //----------------------------------------------------------------------------------------------------
 
 /* Portions borrowed from By Steve's Makerspace
@@ -43,7 +45,7 @@ let tower = {
   lLow: .60,
   lMid: 0,
   lHigh: .85,
-  sideHeightMultiple: 0.577396542692509,
+  sideHeightMultiple: 28 / 49;,
   useGradients: false,
   useStrokes: false,
   strokeVWeight: 0.00875,

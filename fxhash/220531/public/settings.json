@@ -1,0 +1,13 @@
+{
+  "settings": {
+    "canvasWidth": 100,
+    "canvasHeight": 100,
+    "margin": 0,
+    "faceLightness": {
+      "top": 1,
+      "left": 0.85,
+      "right": 0.5
+    }
+  }
+
+}
