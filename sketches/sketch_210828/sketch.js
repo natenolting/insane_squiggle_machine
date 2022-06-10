@@ -37,11 +37,11 @@ let colorD;
 
 let cells;
 
-let border;
+//let border;
 
 function preload() {
 
-  border = loadImage('border.svg');
+  //border = loadImage('border.svg');
 
   for (let i = 1; i <= 49; i++) {
     squiggles.push(loadImage(`../images/squiggles/set-0/${i}.png`));
