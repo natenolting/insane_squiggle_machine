@@ -1,9 +1,9 @@
 // 8x10 2400 X 3000"
 // 9x16 3840 X 2160 @200%
-const CANVAS_WIDTH = 3840 * 2;
-const CANVAS_HEIGHT = 2160;
-const COLUMNS = 70;
-const ROWS = 20;
+const CANVAS_WIDTH = 2400;
+const CANVAS_HEIGHT = 3000;
+const COLUMNS = 40;
+const ROWS = 50
 const DO_MARGIN = true;
 const CELL_WIDTH = CANVAS_WIDTH / COLUMNS;
 const CELL_HEIGHT = CANVAS_HEIGHT / ROWS;
@@ -21,64 +21,52 @@ let hexColors;
 let cells;
 
 
-function preload() {
+function range(start, end) {
+  return Array(end - start + 1).fill().map((_, idx) => start + idx)
+}
 
-  palletData = loadJSON("../../data/palettes-new.json");
+window.preload = () => {
 
-  for (let i = 1; i <= 132; i++) {
-    squiggles.push(loadImage(`../images/squiggles/set-15/${i}.png`));
-  }
-  for (let i = 1; i <= 49; i++) {
-    squiggles.push(loadImage(`../images/squiggles/set-0/${i}.png`));
-  }
+    palletData = loadJSON("../../data/palettes-new.json");
 
-  for (let i = 1; i <= 26; i++) {
-    squiggles.push(loadImage(`../images/squiggles/set-1/${i}.png`));
-  }
+let sets = [];
+// sets[0] = 49;
+// sets[1] = 26;
+// sets[2] = 12;
+// sets[3] = 48;
+// sets[4] = 26;
+// sets[5] = 60;
+// sets[6] = 43;
+// sets[7] = 69;
+// sets[8] = 33;
+// sets[9] = 22;
+// sets[10] = 23;
+// sets[11] = 60;
+// sets[12] = 34;
+// sets[13] = 12;
+// sets[14] = 43;
+// sets[15] = 132;
+// sets[16] = 68;
+// sets[17] = 225;
+// sets[18] = 120;
+// sets[19] = 223;
+sets[20] = 22;
 
-  for (let i = 1; i <= 12; i++) {
-    squiggles.push(loadImage(`../images/squiggles/set-2/${i}.png`));
+let list = [];
+for (var i = 0; i <= 20; i++) {
+  for (var a = 1; a <= sets[i]; a++) {
+    list.push(`../images/squiggles/set-${i}/${a}.png`)
   }
+}
 
-  for (let i = 1; i <= 48; i++) {
-    squiggles.push(loadImage(`../images/squiggles/set-3/${i}.png`));
-  }
+let imagesMax = list.length;
+let imageIndexes = HELPER.shuffleArray(range(1, imagesMax)).slice(0, 250);
 
-  for (let i = 1; i <= 26; i++) {
-    squiggles.push(loadImage(`../images/squiggles/set-4/${i}.png`));
+for (let i = 0; i < imageIndexes.length; i++) {
+  if (list[imageIndexes[i]] !== undefined) {
+    squiggles.push(loadImage(list[imageIndexes[i]]));
   }
-
-  for (let i = 1; i <= 60; i++) {
-    squiggles.push(loadImage(`../images/squiggles/set-5/${i}.png`));
-  }
-
-  for (let i = 1; i <= 43; i++) {
-    squiggles.push(loadImage(`../images/squiggles/set-6/${i}.png`));
-  }
-
-  for (let i = 1; i <= 67; i++) {
-    squiggles.push(loadImage(`../images/squiggles/set-7/${i}.png`));
-  }
-
-  for (let i = 1; i <= 33; i++) {
-    squiggles.push(loadImage(`../images/squiggles/set-8/${i}.png`));
-  }
-
-  for (let i = 1; i <= 22; i++) {
-    squiggles.push(loadImage(`../images/squiggles/set-9/${i}.png`));
-  }
-
-  for (let i = 1; i <= 23; i++) {
-    squiggles.push(loadImage(`../images/squiggles/set-10/${i}.png`));
-  }
-
-  for (let i = 1; i <= 12; i++) {
-    squiggles.push(loadImage(`../images/squiggles/set-13/${i}.png`));
-  }
-
-  for (let i = 1; i <= 43; i++) {
-    squiggles.push(loadImage(`../images/squiggles/set-14/${i}.png`));
-  }
+}
 
 }
 
@@ -90,10 +78,20 @@ function setup() {
 
   pallets = palletData.pallets
 
+  let heights = [];
+  let widths = [];
+  for (let i = 0; i < squiggles.length; i++) {
+    heights.push(squiggles[i].height);
+    widths.push(squiggles[i].width);
+  }
+
+  console.log(`Images average width: ${HELPER.mean(widths)}`);
+  console.log(`Images average height: ${HELPER.mean(heights)}`);
+
 }
 
 function draw() {
-  background(0, 0, 100, 100);
+  background(0, 0, 0, 100);
   noLoop();
   stroke(0, 0, 0, 100);
   noFill();
@@ -107,10 +105,8 @@ function draw() {
   }
 
   cells = (new Cells(COLUMNS, ROWS, CELL_WIDTH, CELL_HEIGHT)).populateCells(false)[0];
-  let randCells;
-  randCells = HELPER.shuffleArray(cells);
-  for (var i = 0; i < randCells.length * .75; i++) {
-    let c = randCells[i];
+  for (var i = 0; i < cells.length; i+=5) {
+    let c = cells[i];
     // stroke(0,0,0,100);
     // strokeWeight(2);
     // rect(c.x, c.y, c.w, c.h);
@@ -155,11 +151,10 @@ function doSquiggle(x, y) {
   let thisImage = squiggles[Math.floor(_.random(squiggles.length - 1))];
   push();
   translate(x - (thisImage.width / 2), y - (thisImage.height / 2));
-
-  let thisScale = map(noise(x, y), 0, 1, 0.1, .95);
+  let thisScale = noise(x, y);
   scale(thisScale);
 
-  rotate(radians(map(noise(x, y), 0, 1, -35, 35)));
+  rotate(radians(map(noise(x, y), 0, 1, -45, 45)));
 
   tint(thisColor.h, thisColor.s, thisColor.l, 100);
   switch (flip) {
