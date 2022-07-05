@@ -30,30 +30,31 @@ window.preload = () => {
     palletData = loadJSON("../../data/palettes-new.json");
 
 let sets = [];
-// sets[0] = 49;
-// sets[1] = 26;
-// sets[2] = 12;
-// sets[3] = 48;
-// sets[4] = 26;
-// sets[5] = 60;
-// sets[6] = 43;
-// sets[7] = 69;
-// sets[8] = 33;
-// sets[9] = 22;
-// sets[10] = 23;
-// sets[11] = 60;
-// sets[12] = 34;
-// sets[13] = 12;
-// sets[14] = 43;
-// sets[15] = 132;
-// sets[16] = 68;
-// sets[17] = 225;
-// sets[18] = 120;
-// sets[19] = 223;
-sets[20] = 22;
+sets[0] = 49;
+sets[1] = 26;
+sets[2] = 12;
+sets[3] = 48;
+sets[4] = 26;
+sets[5] = 60;
+sets[6] = 43;
+sets[7] = 69;
+sets[8] = 33;
+sets[9] = 22;
+sets[10] = 23;
+sets[11] = 60;
+sets[12] = 34;
+sets[13] = 12;
+sets[14] = 43;
+sets[15] = 132;
+sets[16] = 68;
+sets[17] = 225;
+sets[18] = 120;
+sets[19] = 223;
+sets[20] = 46;
+sets[21] = 14;
 
 let list = [];
-for (var i = 0; i <= 20; i++) {
+for (var i = 0; i <= 21; i++) {
   for (var a = 1; a <= sets[i]; a++) {
     list.push(`../images/squiggles/set-${i}/${a}.png`)
   }
