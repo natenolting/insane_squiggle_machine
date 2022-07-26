@@ -17,7 +17,7 @@ const PALLET_ID = Math.floor(fxrand() * 4200);
 const TRANSPARENT = false;
 const DEBUG = false;
 const RETRY_LIMIT = 30;
-const MIN_NON_WHITE = 0.40;
+const MIN_NON_WHITE = 0.40; 
 
 const CONFIG = {
     noiseSeed: NOISE_SEED,
