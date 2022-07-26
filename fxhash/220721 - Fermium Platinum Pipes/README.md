@@ -1,10 +1,10 @@
 Fermium Platinum Pipes, by Nate Nolting
-July, 2022
+July 2022
 Bemidji, MN, USA
 
 Project Description
 ---
-"Fermium Platinum Pipes" is a project studying isometric shapes, allowing them to weave them selves together.
+"Fermium Platinum Pipes" is a project studying isometric shapes, allowing them to weave themselves together. Each section of the pipes is permitted to travel in any cardinal or ordinal direction. In addition, the length and size are determined by random numbers terminating at a margin.
 
 Features
 ---
@@ -13,13 +13,13 @@ Features
 - Portrait 50% probability
 
 2. Color Palettes:
-Color pallets based on the top colors on ColourLovers.com. Each adjacent color in the pallet is tweened 5 levels between to add more variety. All equally probable. See https://github.com/Jam3/nice-color-palettes for more info.
+The color pallets are based on the top colors on ColourLovers.com. Each adjacent color in the pallet is tweened five levels to add more variety—all equally probable. See https://github.com/Jam3/nice-color-palettes for more info.
 
 3. Cells
-The sketch has an underlying grid, which determins the tightness or loosness and placement of the pipes.
+The sketch has an underlying grid, which determines the elements' tightness, looseness, and placement.
 
 4. Density:
-Used as a constant random value from fxrand() for building several internal elements.
+It is used as a constant random value from fxrand() for building several internal elements.
 
 Interaction
 ---
@@ -36,7 +36,7 @@ Made with Processing / P5.js
 p5.js v1.4.0 June 29, 2021
 
 Version Control
-https://github.com/sspboyd/boom
+https://github.com/natenolting/insane_squiggle_machine
 
 License info
 ---
